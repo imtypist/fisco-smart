@@ -61,4 +61,3 @@ compile_commands.json
 tools/BcosAirBuilder/nodes**
 tools/BcosProBuilder/generated**
 tools/BcosAirBuilder/*
-*.log
