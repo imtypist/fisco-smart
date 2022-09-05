@@ -19,12 +19,12 @@
  * @date: 2021-03-23
  */
 #pragma once
+#include "../Common.h"
+#include "../ParallelMerkleProof.h"
 #include <bcos-crypto/interfaces/crypto/CryptoSuite.h>
-#include <bcos-framework/interfaces/protocol/Block.h>
-#include <bcos-framework/interfaces/protocol/BlockHeaderFactory.h>
-#include <bcos-framework/interfaces/protocol/TransactionMetaData.h>
-#include <bcos-protocol/Common.h>
-#include <bcos-protocol/ParallelMerkleProof.h>
+#include <bcos-framework/protocol/Block.h>
+#include <bcos-framework/protocol/BlockHeaderFactory.h>
+#include <bcos-framework/protocol/TransactionMetaData.h>
 #include <bcos-protocol/protobuf/proto/Block.pb.h>
 namespace bcos
 {
@@ -67,17 +67,21 @@ public:
     ~PBBlock() override
     {
         // return the ownership of rawProposal to the passed-in proposal
-        clearTransactionMetaDataCache();
+        auto allocatedMetaDataSize = m_pbRawBlock->transactionsmetadata_size();
+        for (int i = 0; i < allocatedMetaDataSize; i++)
+        {
+            m_pbRawBlock->mutable_transactionsmetadata()->UnsafeArenaReleaseLast();
+        }
     }
 
     void decode(bytesConstRef _data, bool _calculateHash, bool _checkSig) override;
     void encode(bytes& _encodeData) const override;
 
     // getNonces of the current block
-    Transaction::ConstPtr transaction(size_t _index) const override;
-    TransactionMetaData::ConstPtr transactionMetaData(size_t _index) const override;
+    Transaction::ConstPtr transaction(uint64_t _index) const override;
+    TransactionMetaData::ConstPtr transactionMetaData(uint64_t _index) const override;
 
-    TransactionReceipt::ConstPtr receipt(size_t _index) const override;
+    TransactionReceipt::ConstPtr receipt(uint64_t _index) const override;
 
     int32_t version() const override { return m_pbRawBlock->version(); }
 
@@ -110,7 +114,7 @@ public:
         clearTransactionsCache();
     }
     // Note: the caller must ensure the allocated transactions size
-    void setTransaction(size_t _index, Transaction::Ptr _transaction) override
+    void setTransaction(uint64_t _index, Transaction::Ptr _transaction) override
     {
         if (m_transactions->size() <= _index)
         {
@@ -132,7 +136,7 @@ public:
         clearReceiptsCache();
     }
     // Note: the caller must ensure the allocated receipts size
-    void setReceipt(size_t _index, TransactionReceipt::Ptr _receipt) override
+    void setReceipt(uint64_t _index, TransactionReceipt::Ptr _receipt) override
     {
         if (m_receipts->size() <= _index)
         {
@@ -153,11 +157,11 @@ public:
     }
 
     // get transactions size
-    size_t transactionsSize() const override { return m_transactions->size(); }
+    uint64_t transactionsSize() const override { return m_transactions->size(); }
     // get receipts size
-    size_t receiptsSize() const override { return m_receipts->size(); }
+    uint64_t receiptsSize() const override { return m_receipts->size(); }
 
-    size_t transactionsMetaDataSize() const override { return m_transactionMetaDataList->size(); }
+    uint64_t transactionsMetaDataSize() const override { return m_transactionMetaDataList->size(); }
     void setNonceList(NonceList const& _nonceList) override
     {
         *m_nonceList = _nonceList;
@@ -183,13 +187,13 @@ public:
         std::vector<bytes> transactionsList;
         if (transactionsSize() > 0)
         {
-            transactionsList = bcos::protocol::encodeToCalculateRoot(
-                transactionsSize(), [this](size_t _index) { return transaction(_index)->hash(); });
+            transactionsList = bcos::protocol::encodeToCalculateRoot(transactionsSize(),
+                [this](uint64_t _index) { return transaction(_index)->hash(); });
         }
         else if (transactionsMetaDataSize() > 0)
         {
             transactionsList = bcos::protocol::encodeToCalculateRoot(transactionsHashSize(),
-                [this](size_t _index) { return transactionMetaData(_index)->hash(); });
+                [this](uint64_t _index) { return transactionMetaData(_index)->hash(); });
         }
 
         txsRoot = bcos::protocol::calculateMerkleProofRoot(
@@ -207,7 +211,7 @@ public:
         }
 
         auto receiptsList = bcos::protocol::encodeToCalculateRoot(
-            receiptsSize(), [this](size_t _index) { return receipt(_index)->hash(); });
+            receiptsSize(), [this](uint64_t _index) { return receipt(_index)->hash(); });
         receiptsRoot =
             bcos::protocol::calculateMerkleProofRoot(m_receiptFactory->cryptoSuite(), receiptsList);
 
@@ -217,16 +221,6 @@ public:
 protected:
     virtual void encodeTransactionsMetaData() const;
     virtual void decodeTransactionsMetaData();
-
-    virtual void clearTransactionMetaDataCache() const
-    {
-        auto allocatedMetaDataSize = m_pbRawBlock->transactionsmetadata_size();
-        for (int i = 0; i < allocatedMetaDataSize; i++)
-        {
-            m_pbRawBlock->mutable_transactionsmetadata()->UnsafeArenaReleaseLast();
-        }
-        m_pbRawBlock->clear_transactionsmetadata();
-    }
 
 private:
     void decodeTransactions(bool _calculateHash, bool _checkSig);

@@ -21,9 +21,9 @@
 #pragma once
 #include "../interfaces/PBFTMessageFactory.h"
 #include "../interfaces/PBFTStorage.h"
-#include <bcos-framework/interfaces/dispatcher/SchedulerInterface.h>
-#include <bcos-framework/interfaces/protocol/BlockFactory.h>
-#include <bcos-framework/interfaces/storage/KVStorageHelper.h>
+#include <bcos-framework/dispatcher/SchedulerInterface.h>
+#include <bcos-framework/protocol/BlockFactory.h>
+#include <bcos-framework/storage/KVStorageHelper.h>
 #include <bcos-utilities/ThreadPool.h>
 
 namespace bcos
@@ -45,7 +45,13 @@ public:
         createKVTable(m_pbftCommitDB);
         m_commitBlockWorker = std::make_shared<ThreadPool>("blockSubmit", 1);
     }
-
+    ~LedgerStorage() override
+    {
+        if (m_commitBlockWorker)
+        {
+            m_commitBlockWorker->stop();
+        }
+    }
     void createKVTable(std::string const& _dbName);
     PBFTProposalListPtr loadState(bcos::protocol::BlockNumber _stabledIndex) override;
 
@@ -59,6 +65,13 @@ public:
     {
         m_finalizeHandler = _finalizeHandler;
     }
+    void registerOnStableCheckPointCommitFailed(
+        std::function<void(bcos::Error::Ptr&&, PBFTProposalInterface::Ptr)>
+            _onStableCheckPointCommitFailed) override
+    {
+        m_onStableCheckPointCommitFailed = _onStableCheckPointCommitFailed;
+    }
+
     void asyncGetCommittedProposals(bcos::protocol::BlockNumber _start, size_t _offset,
         std::function<void(PBFTProposalListPtr)> _onSuccess) override;
 
@@ -73,7 +86,7 @@ protected:
 
     virtual void asyncRemove(std::string const& _dbName, std::string const& _key);
 
-    virtual void commitStableCheckPoint(
+    virtual void commitStableCheckPoint(PBFTProposalInterface::Ptr _stableProposal,
         bcos::protocol::BlockHeader::Ptr _blockHeader, bcos::protocol::Block::Ptr _blockInfo);
     virtual void asyncGetLatestCommittedProposalIndex();
 
@@ -102,7 +115,8 @@ protected:
     boost::condition_variable m_signalled;
     boost::mutex x_signalled;
     std::function<void(bcos::ledger::LedgerConfig::Ptr, bool _syncBlock)> m_finalizeHandler;
-
+    std::function<void(bcos::Error::Ptr&&, PBFTProposalInterface::Ptr)>
+        m_onStableCheckPointCommitFailed;
     std::shared_ptr<ThreadPool> m_commitBlockWorker;
 };
 }  // namespace consensus

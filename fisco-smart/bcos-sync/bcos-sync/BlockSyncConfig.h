@@ -21,14 +21,14 @@
 #pragma once
 #include "bcos-sync/interfaces/BlockSyncMsgFactory.h"
 #include <bcos-crypto/interfaces/crypto/KeyInterface.h>
-#include <bcos-framework/interfaces/consensus/ConsensusInterface.h>
-#include <bcos-framework/interfaces/dispatcher/SchedulerInterface.h>
-#include <bcos-framework/interfaces/front/FrontServiceInterface.h>
-#include <bcos-framework/interfaces/ledger/LedgerInterface.h>
-#include <bcos-framework/interfaces/protocol/BlockFactory.h>
-#include <bcos-framework/interfaces/protocol/TransactionSubmitResultFactory.h>
-#include <bcos-framework/interfaces/sync/SyncConfig.h>
-#include <bcos-framework/interfaces/txpool/TxPoolInterface.h>
+#include <bcos-framework/consensus/ConsensusInterface.h>
+#include <bcos-framework/dispatcher/SchedulerInterface.h>
+#include <bcos-framework/front/FrontServiceInterface.h>
+#include <bcos-framework/ledger/LedgerInterface.h>
+#include <bcos-framework/protocol/BlockFactory.h>
+#include <bcos-framework/protocol/TransactionSubmitResultFactory.h>
+#include <bcos-framework/sync/SyncConfig.h>
+#include <bcos-framework/txpool/TxPoolInterface.h>
 #include <bcos-utilities/CallbackCollectionHandler.h>
 namespace bcos
 {
@@ -120,6 +120,19 @@ public:
         m_nodeTypeChanged = _onNodeTypeChanged;
     }
 
+    void setMasterNode(bool _masterNode)
+    {
+        Guard l(m_mutex);
+        m_masterNode = _masterNode;
+        // notify nodeType to the gateway
+        if (m_nodeTypeChanged)
+        {
+            m_nodeTypeChanged(nodeType());
+        }
+    }
+
+    bool masterNode() const { return m_masterNode; }
+
 protected:
     void setHash(bcos::crypto::HashType const& _hash);
 
@@ -162,8 +175,11 @@ private:
 
     // TODO: ensure thread-safe
     bcos::protocol::NodeType m_nodeType = bcos::protocol::NodeType::None;
+    bcos::protocol::NodeType m_notifiedNodeType = bcos::protocol::NodeType::None;
 
     std::function<void(bcos::protocol::NodeType)> m_nodeTypeChanged;
+
+    std::atomic_bool m_masterNode = {false};
 };
 }  // namespace sync
 }  // namespace bcos

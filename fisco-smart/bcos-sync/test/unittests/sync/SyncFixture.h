@@ -22,7 +22,7 @@
 #include "../faker/FakeConsensus.h"
 #include "bcos-sync/BlockSync.h"
 #include "bcos-sync/BlockSyncFactory.h"
-#include <bcos-framework/interfaces/consensus/ConsensusNode.h>
+#include <bcos-framework/consensus/ConsensusNode.h>
 #include <bcos-framework/testutils/faker/FakeFrontService.h>
 #include <bcos-framework/testutils/faker/FakeLedger.h>
 #include <bcos-framework/testutils/faker/FakeScheduler.h>
@@ -47,6 +47,7 @@ public:
       : BlockSync(_config, _idleWaitMs)
     {
         m_running = true;
+        enableAsMaster(true);
     }
     ~FakeBlockSync() override {}
 

@@ -20,8 +20,8 @@
 
 #include "InferencePrecompiled.h"
 #include "../../executive/BlockContext.h"
-#include "../PrecompiledResult.h"
-#include "../Utilities.h"
+#include "bcos-executor/src/precompiled/common/PrecompiledResult.h"
+#include "bcos-executor/src/precompiled/common/Utilities.h"
 #include <fstream>
 
 using namespace bcos;
@@ -37,27 +37,20 @@ InferencePrecompiled::InferencePrecompiled(crypto::Hash::Ptr _hashImpl) : Precom
     name2Selector[INFERENCE_METHOD_PREDICT] = getFuncSelector(INFERENCE_METHOD_PREDICT, _hashImpl);
 }
 
-std::string InferencePrecompiled::toString()
-{
-    return "Inference";
-}
-
 std::shared_ptr<PrecompiledExecResult> InferencePrecompiled::call(
-    std::shared_ptr<executor::TransactionExecutive> _executive, bytesConstRef _param,
-    const std::string&, const std::string&, int64_t)
+    std::shared_ptr<executor::TransactionExecutive> _executive, 
+    PrecompiledExecResult::Ptr _callParameters)
 {
     PRECOMPILED_LOG(TRACE) << LOG_BADGE("InferencePrecompiled") << LOG_DESC("call")
-                           << LOG_KV("param", toHexString(_param));
+                           << LOG_KV("param", toHexString(_callParameters->input()));
 
     // parse function name
-    uint32_t func = getParamFunc(_param);
-    bytesConstRef data = getParamData(_param);
+    uint32_t func = getParamFunc(_callParameters->input());
+    bytesConstRef data = _callParameters->params();
     auto blockContext = _executive->blockContext().lock();
-    auto codec =
-        std::make_shared<PrecompiledCodec>(blockContext->hashHandler(), blockContext->isWasm());
-    auto callResult = std::make_shared<PrecompiledExecResult>();
+    auto codec = CodecWrapper(blockContext->hashHandler(), blockContext->isWasm());
     auto gasPricer = m_precompiledGasFactory->createPrecompiledGas();
-    gasPricer->setMemUsed(_param.size());
+    gasPricer->setMemUsed(_callParameters->input().size());
     
     if (func == name2Selector[INFERENCE_METHOD_PREDICT])
     {   // predict() function call
@@ -65,9 +58,9 @@ std::shared_ptr<PrecompiledExecResult> InferencePrecompiled::call(
         std::string retValue = "Call Inference!";
 
         // std::string execString = "cd /home/junqin/gramine/examples/pytorch;gramine-direct pytorch pytorchexample.py";
-        std::string resPath = "/home/junqin/gramine/examples/pytorch/result.txt";
+        std::string resPath = "/home/junqin/examples/pytorch/result.txt";
         std::string cmd;
-        codec->decode(data, cmd);
+        codec.decode(data, cmd);
         int retCode = system(cmd.c_str());
         if (retCode != -1 and retCode != 127)
         {
@@ -80,15 +73,15 @@ std::shared_ptr<PrecompiledExecResult> InferencePrecompiled::call(
             PRECOMPILED_LOG(ERROR) << LOG_BADGE("InferencePrecompiled") << LOG_DESC("predict")
                                    << LOG_KV("result", retValue);
         }
-        callResult->setExecResult(codec->encode(retValue));
+        _callParameters->setExecResult(codec.encode(retValue));
     }
     else
     {  // unknown function call
         PRECOMPILED_LOG(ERROR) << LOG_BADGE("InferencePrecompiled")
                                << LOG_DESC(" unknown function ") << LOG_KV("func", func);
-        callResult->setExecResult(codec->encode(u256((int)CODE_UNKNOW_FUNCTION_CALL)));
+        _callParameters->setExecResult(codec.encode(u256((int)CODE_UNKNOW_FUNCTION_CALL)));
     }
-    gasPricer->updateMemUsed(callResult->m_execResult.size());
-    callResult->setGas(gasPricer->calTotalGas());
-    return callResult;
+    gasPricer->updateMemUsed(_callParameters->m_execResult.size());
+    _callParameters->setGas(_callParameters->m_gas - gasPricer->calTotalGas());
+    return _callParameters;
 }

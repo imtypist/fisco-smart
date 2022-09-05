@@ -1,7 +1,7 @@
 #pragma once
 
 #include "MockExecutor.h"
-#include <bcos-framework/interfaces/executor/ParallelTransactionExecutorInterface.h>
+#include <bcos-framework/executor/ParallelTransactionExecutorInterface.h>
 #include <tbb/task_group.h>
 
 namespace bcos::test
@@ -14,11 +14,12 @@ public:
     MockMultiParallelExecutor(const std::string& name) : MockParallelExecutor(name) {}
     ~MockMultiParallelExecutor() noexcept override { m_taskGroup.wait(); }
 
-    void nextBlockHeader(const bcos::protocol::BlockHeader::ConstPtr& blockHeader,
+    void nextBlockHeader(int64_t schedulerTermId,
+        const bcos::protocol::BlockHeader::ConstPtr& blockHeader,
         std::function<void(bcos::Error::UniquePtr)> callback) override
     {
         m_taskGroup.run([this, blockHeader = blockHeader, callback = std::move(callback)]() {
-            MockParallelExecutor::nextBlockHeader(blockHeader, std::move(callback));
+            MockParallelExecutor::nextBlockHeader(0, blockHeader, std::move(callback));
         });
     }
 
@@ -32,6 +33,11 @@ public:
         });
     }
 
+    void call(bcos::protocol::ExecutionMessage::UniquePtr input,
+        std::function<void(bcos::Error::UniquePtr, bcos::protocol::ExecutionMessage::UniquePtr)>
+            callback) override
+    {}
+
     void dagExecuteTransactions(gsl::span<bcos::protocol::ExecutionMessage::UniquePtr> inputs,
         std::function<void(
             bcos::Error::UniquePtr, std::vector<bcos::protocol::ExecutionMessage::UniquePtr>)>
@@ -42,7 +48,7 @@ public:
         });
     }
 
-    void call(bcos::protocol::ExecutionMessage::UniquePtr input,
+    void dmcCall(bcos::protocol::ExecutionMessage::UniquePtr input,
         std::function<void(bcos::Error::UniquePtr, bcos::protocol::ExecutionMessage::UniquePtr)>
             callback) override
     {}
@@ -58,7 +64,8 @@ public:
     /* ----- XA Transaction interface Start ----- */
 
     // Write data to storage uncommitted
-    void prepare(const TwoPCParams& params, std::function<void(bcos::Error::Ptr)> callback) override
+    void prepare(const bcos::protocol::TwoPCParams& params,
+        std::function<void(bcos::Error::Ptr)> callback) override
     {
         m_taskGroup.run([this, params = params, callback = std::move(callback)]() {
             MockParallelExecutor::prepare(params, std::move(callback));
@@ -66,7 +73,8 @@ public:
     }
 
     // Commit uncommitted data
-    void commit(const TwoPCParams& params, std::function<void(bcos::Error::Ptr)> callback) override
+    void commit(const bcos::protocol::TwoPCParams& params,
+        std::function<void(bcos::Error::Ptr)> callback) override
     {
         m_taskGroup.run([this, params = params, callback = std::move(callback)]() {
             MockParallelExecutor::commit(params, std::move(callback));
@@ -74,8 +82,8 @@ public:
     }
 
     // Rollback the changes
-    void rollback(
-        const TwoPCParams& params, std::function<void(bcos::Error::Ptr)> callback) override
+    void rollback(const bcos::protocol::TwoPCParams& params,
+        std::function<void(bcos::Error::Ptr)> callback) override
     {
         m_taskGroup.run([this, params = params, callback = std::move(callback)]() {
             MockParallelExecutor::rollback(params, std::move(callback));

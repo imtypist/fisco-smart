@@ -9,10 +9,11 @@
 
 #pragma once
 #include <bcos-crypto/interfaces/crypto/KeyFactory.h>
+#include <bcos-framework/protocol/GlobalConfig.h>
+#include <bcos-framework/protocol/ProtocolInfoCodec.h>
 #include <bcos-gateway/Gateway.h>
 #include <bcos-gateway/libp2p/P2PInterface.h>
 #include <bcos-gateway/libp2p/P2PSession.h>
-
 #include <map>
 #include <memory>
 #include <unordered_map>
@@ -28,7 +29,7 @@ class Gateway;
 class Service : public P2PInterface, public std::enable_shared_from_this<Service>
 {
 public:
-    Service();
+    Service(std::string const& _nodeID);
     virtual ~Service() { stop(); }
 
     using Ptr = std::shared_ptr<Service>;
@@ -39,7 +40,6 @@ public:
 
     virtual bool actived() { return m_run; }
     P2pID id() const override { return m_nodeID; }
-    void setId(const P2pID& _nodeID) { m_nodeID = _nodeID; }
 
     virtual void onConnect(
         NetworkException e, P2PInfo const& p2pInfo, std::shared_ptr<SessionFace> session);
@@ -47,12 +47,15 @@ public:
     virtual void onMessage(NetworkException e, SessionFace::Ptr session, Message::Ptr message,
         std::weak_ptr<P2PSession> p2pSessionWeakPtr);
 
-    std::shared_ptr<P2PMessage> sendMessageByNodeID(
-        P2pID nodeID, std::shared_ptr<P2PMessage> message) override;
-    void sendMessageBySession(
-        int _packetType, bytesConstRef _payload, P2PSession::Ptr _p2pSession) override;
+    virtual bool onBeforeMessage(
+        SessionFace::Ptr _session, Message::Ptr _message, SessionCallbackFunc _callback);
+
     void sendRespMessageBySession(
         bytesConstRef _payload, P2PMessage::Ptr _p2pMessage, P2PSession::Ptr _p2pSession) override;
+
+    std::shared_ptr<P2PMessage> sendMessageByNodeID(
+        P2pID nodeID, std::shared_ptr<P2PMessage> message) override;
+
     void asyncSendMessageByNodeID(P2pID nodeID, std::shared_ptr<P2PMessage> message,
         CallbackFuncWithSession callback, Options options = Options()) override;
 
@@ -75,6 +78,7 @@ public:
         return p2pInfo;
     }
     bool isConnected(P2pID const& nodeID) const override;
+    bool isReachable(P2pID const& _nodeID) const override { return isConnected(_nodeID); }
 
     std::shared_ptr<Host> host() override { return m_host; }
     virtual void setHost(std::shared_ptr<Host> host) { m_host = host; }
@@ -110,10 +114,10 @@ public:
     }
 
     void asyncSendMessageByP2PNodeID(int16_t _type, P2pID _dstNodeID, bytesConstRef _payload,
-        Options options, P2PResponseCallback _callback) override;
+        Options options = Options(), P2PResponseCallback _callback = nullptr) override;
 
     void asyncBroadcastMessageToP2PNodes(
-        int16_t _type, bytesConstRef _payload, Options _options) override;
+        int16_t _type, uint16_t moduleID, bytesConstRef _payload, Options _options) override;
 
     void asyncSendMessageByP2PNodeIDs(int16_t _type, const std::vector<P2pID>& _nodeIDs,
         bytesConstRef _payload, Options _options) override;
@@ -149,12 +153,78 @@ public:
         UpgradeGuard ul(l);
         m_msgHandlers.erase(_type);
     }
-    bool connected(std::string const& _nodeID) override;
 
-private:
+
+    void asyncSendMessageByEndPoint(NodeIPEndpoint const& _endPoint, P2PMessage::Ptr message,
+        CallbackFuncWithSession callback, Options options = Options());
+
+    // handle before sending message, if the check fails, meaning false is returned, the message is
+    // not sent, and the SessionCallbackFunc will be performed
+    void setBeforeMessageHandler(
+        std::function<bool(SessionFace::Ptr, Message::Ptr, SessionCallbackFunc)> _handler)
+    {
+        m_beforeMessageHandler = _handler;
+    }
+
+    void setOnMessageHandler(std::function<void(SessionFace::Ptr, Message::Ptr)> _handler)
+    {
+        m_onMessageHandler = _handler;
+    }
+
+protected:
+    virtual void sendMessageToSession(P2PSession::Ptr _p2pSession, P2PMessage::Ptr _msg,
+        Options = Options(), CallbackFuncWithSession = CallbackFuncWithSession());
+
     std::shared_ptr<P2PMessage> newP2PMessage(int16_t _type, bytesConstRef _payload);
+    // handshake protocol
+    void asyncSendProtocol(P2PSession::Ptr _session);
+    void onReceiveProtocol(
+        NetworkException _e, std::shared_ptr<P2PSession> _session, P2PMessage::Ptr _message);
 
-private:
+    // handlers called when new-session
+    void registerOnNewSession(std::function<void(P2PSession::Ptr)> _handler)
+    {
+        m_newSessionHandlers.emplace_back(_handler);
+    }
+    // handlers called when delete-session
+    void registerOnDeleteSession(std::function<void(P2PSession::Ptr)> _handler)
+    {
+        m_deleteSessionHandlers.emplace_back(_handler);
+    }
+
+
+    virtual void callNewSessionHandlers(P2PSession::Ptr _session)
+    {
+        try
+        {
+            for (auto const& handler : m_newSessionHandlers)
+            {
+                handler(_session);
+            }
+        }
+        catch (std::exception const& e)
+        {
+            SERVICE_LOG(WARNING) << LOG_DESC("callNewSessionHandlers exception")
+                                 << LOG_KV("error", boost::diagnostic_information(e));
+        }
+    }
+    virtual void callDeleteSessionHandlers(P2PSession::Ptr _session)
+    {
+        try
+        {
+            for (auto const& handler : m_deleteSessionHandlers)
+            {
+                handler(_session);
+            }
+        }
+        catch (std::exception const& e)
+        {
+            SERVICE_LOG(WARNING) << LOG_DESC("callDeleteSessionHandlers exception")
+                                 << LOG_KV("error", boost::diagnostic_information(e));
+        }
+    }
+
+protected:
     std::vector<std::function<void(NetworkException, P2PSession::Ptr)>> m_disconnectionHandlers;
 
     std::shared_ptr<bcos::crypto::KeyFactory> m_keyFactory;
@@ -177,6 +247,19 @@ private:
 
     std::map<int16_t, MessageHandler> m_msgHandlers;
     mutable SharedMutex x_msgHandlers;
+
+    // the local protocol
+    bcos::protocol::ProtocolInfo::ConstPtr m_localProtocol;
+    bcos::protocol::ProtocolInfoCodec::ConstPtr m_codec;
+
+    // handlers called when new-session
+    std::vector<std::function<void(P2PSession::Ptr)>> m_newSessionHandlers;
+    // handlers called when delete-session
+    std::vector<std::function<void(P2PSession::Ptr)>> m_deleteSessionHandlers;
+
+    std::function<bool(SessionFace::Ptr, Message::Ptr, SessionCallbackFunc)> m_beforeMessageHandler;
+
+    std::function<void(SessionFace::Ptr, Message::Ptr)> m_onMessageHandler;
 };
 
 }  // namespace gateway

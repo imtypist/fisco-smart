@@ -48,7 +48,8 @@ void importTransactions(size_t _txsNum, CryptoSuite::Ptr _cryptoSuite, TxPoolFix
         auto tx = fakeTransaction(_cryptoSuite, utcTime() + 1000 + i, ledger->blockNumber() + 1,
             _faker->chainId(), _faker->groupId());
         transactions.push_back(tx);
-        auto encodedData = tx->encode();
+        bcos::bytes encodedData;
+        tx->encode(encodedData);
         auto txData = std::make_shared<bytes>(encodedData.begin(), encodedData.end());
         txpool->asyncSubmit(txData, [&](Error::Ptr, TransactionSubmitResult::Ptr) {});
     }
@@ -115,6 +116,8 @@ void testTransactionSync(bool _onlyTxsStatus = false)
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(2));
             }
+            std::cout << "### txpoolSize: " << txpoolPeer->txpool()->txpoolStorage()->size()
+                      << ", txsNum:" << txsNum << std::endl;
             BOOST_CHECK(txpoolPeer->txpool()->txpoolStorage()->size() == txsNum);
         }
         // maintain transactions again

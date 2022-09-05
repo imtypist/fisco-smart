@@ -1,11 +1,22 @@
 include(ExternalProject)
 include(GNUInstallDirs)
-find_program(CARGO_COMMAND cargo)
-find_program(RUSTUP_COMMAND rustup)
+
+if(CMAKE_HOST_WIN32)
+    set(USER_HOME "$ENV{USERPROFILE}")
+else()
+    set(USER_HOME "$ENV{HOME}")
+endif()
+
+message(${USER_HOME})
+
+find_program(CARGO_COMMAND NAMES cargo REQUIRED PATHS "${USER_HOME}\\.cargo\\bin")
+find_program(RUSTUP_COMMAND NAMES rustup REQUIRED PATHS "${USER_HOME}\\.cargo\\bin")
+
 if(NOT CARGO_COMMAND OR NOT RUSTUP_COMMAND)
     message(FATAL_ERROR "cargo/rustup is not installed")
 endif()
-find_program(RUSTC_COMMAND rustc)
+
+find_program(RUSTC_COMMAND NAMES rustc REQUIRED PATHS "${USER_HOME}\\.cargo\\bin")
 if(NOT CARGO_COMMAND OR NOT RUSTC_COMMAND)
     message(FATAL_ERROR "rustc is not installed")
 endif()
@@ -29,15 +40,15 @@ ExternalProject_Add(bcos_wasm_project
         PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/deps
         # DOWNLOAD_NO_PROGRESS 1
         GIT_REPOSITORY https://${URL_BASE}/FISCO-BCOS/bcos-wasm.git
-        GIT_TAG c2a9d9a795952c97b33b8e400608fbfb7f77e8eb
+        GIT_TAG bd6bbf83f0168e88a67710f03b0a142b6fb60598
         GIT_SHALLOW false
         BUILD_IN_SOURCE 1
         CONFIGURE_COMMAND ""
-        BUILD_COMMAND cargo build --release
+        BUILD_COMMAND ${CARGO_COMMAND} build --release
         INSTALL_COMMAND ""
         LOG_DOWNLOAD 1
         LOG_CONFIGURE 1
-        LOG_BUILD 1
+        LOG_BUILD 0
         LOG_INSTALL 1
         BUILD_BYPRODUCTS <SOURCE_DIR>/target/release/libbcos_wasm.a <SOURCE_DIR>/FBWASM.h
 )

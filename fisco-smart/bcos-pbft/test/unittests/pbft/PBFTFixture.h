@@ -19,13 +19,13 @@
  * @date 2021-05-28
  */
 #pragma once
-#include "bcos-framework/interfaces/storage/KVStorageHelper.h"
+#include "bcos-crypto/interfaces/crypto/KeyPairInterface.h"
+#include "bcos-framework/storage/KVStorageHelper.h"
 #include "bcos-pbft/core/StateMachine.h"
 #include "bcos-pbft/pbft/PBFTFactory.h"
 #include "bcos-pbft/pbft/PBFTImpl.h"
 #include "bcos-pbft/pbft/storage/LedgerStorage.h"
-#include "interfaces/crypto/KeyPairInterface.h"
-#include <bcos-framework/interfaces/consensus/ConsensusNode.h>
+#include <bcos-framework/consensus/ConsensusNode.h>
 #include <bcos-framework/testutils/faker/FakeFrontService.h>
 #include <bcos-framework/testutils/faker/FakeLedger.h>
 #include <bcos-framework/testutils/faker/FakeScheduler.h>
@@ -132,9 +132,11 @@ public:
         m_cacheProcessor->registerProposalAppliedHandler(
             boost::bind(&FakePBFTEngine::onProposalApplied, this, boost::placeholders::_1,
                 boost::placeholders::_2, boost::placeholders::_3));
-        m_cacheProcessor->registerOnLoadAndVerifyProposalSucc(boost::bind(
-            &FakePBFTEngine::onLoadAndVerifyProposalSucc, this, boost::placeholders::_1));
+        m_cacheProcessor->registerOnLoadAndVerifyProposalFinish(
+            boost::bind(&FakePBFTEngine::onLoadAndVerifyProposalFinish, this,
+                boost::placeholders::_1, boost::placeholders::_2, boost::placeholders::_3));
         initSendResponseHandler();
+        _config->enableAsMasterNode(true);
     }
     ~FakePBFTEngine() override {}
 
@@ -176,7 +178,17 @@ public:
 class FakePBFTImpl : public PBFTImpl
 {
 public:
-    explicit FakePBFTImpl(PBFTEngine::Ptr _pbftEngine) : PBFTImpl(_pbftEngine) { m_running = true; }
+    explicit FakePBFTImpl(PBFTEngine::Ptr _pbftEngine) : PBFTImpl(_pbftEngine)
+    {
+        m_running = true;
+        m_masterNode.store(true);
+    }
+    void start() override { m_pbftEngine->recoverState(); }
+    void init() override
+    {
+        PBFTImpl::init();
+        start();
+    }
     ~FakePBFTImpl() {}
 };
 

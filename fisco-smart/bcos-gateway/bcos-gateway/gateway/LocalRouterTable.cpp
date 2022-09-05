@@ -18,7 +18,8 @@
  * @date 2021-12-29
  */
 #include "LocalRouterTable.h"
-#include <bcos-framework/interfaces/protocol/ServiceDesc.h>
+#include "fisco-bcos-tars-service/Common/TarsUtils.h"
+#include <bcos-framework/protocol/ServiceDesc.h>
 #include <bcos-gateway/Common.h>
 using namespace bcos;
 using namespace bcos::protocol;
@@ -53,25 +54,24 @@ std::vector<FrontServiceInfo::Ptr> LocalRouterTable::getGroupFrontServiceList(
     return nodeServiceList;
 }
 
-NodeIDs LocalRouterTable::getGroupNodeIDList(const std::string& _groupID) const
+void LocalRouterTable::getGroupNodeInfoList(
+    GroupNodeInfo::Ptr _groupNodeInfo, const std::string& _groupID) const
 {
-    NodeIDs nodeIDList;
     ReadGuard l(x_nodeList);
     if (!m_nodeList.count(_groupID))
     {
-        return nodeIDList;
+        return;
     }
     for (auto const& item : m_nodeList.at(_groupID))
     {
-        auto bytes = bcos::fromHexString(item.first);
-        nodeIDList.emplace_back(m_keyFactory->createKey(*bytes.get()));
+        _groupNodeInfo->appendNodeID(item.first);
+        _groupNodeInfo->appendProtocol(item.second->protocolInfo());
     }
-    return nodeIDList;
 }
 
-std::map<std::string, std::set<std::string>> LocalRouterTable::nodeListInfo() const
+std::map<std::string, std::set<std::string>, std::less<>> LocalRouterTable::nodeListInfo() const
 {
-    std::map<std::string, std::set<std::string>> nodeList;
+    std::map<std::string, std::set<std::string>, std::less<>> nodeList;
     ReadGuard l(x_nodeList);
     for (auto const& it : m_nodeList)
     {
@@ -96,7 +96,8 @@ std::map<std::string, std::set<std::string>> LocalRouterTable::nodeListInfo() co
  * @param _frontService: FrontService
  */
 bool LocalRouterTable::insertNode(const std::string& _groupID, NodeIDPtr _nodeID,
-    bcos::protocol::NodeType _type, FrontServiceInterface::Ptr _frontService)
+    bcos::protocol::NodeType _type, FrontServiceInterface::Ptr _frontService,
+    bcos::protocol::ProtocolInfo::ConstPtr _protocolInfo)
 {
     auto nodeIDStr = _nodeID->hex();
     UpgradableGuard l(x_nodeList);
@@ -113,9 +114,12 @@ bool LocalRouterTable::insertNode(const std::string& _groupID, NodeIDPtr _nodeID
     }
     auto frontServiceInfo =
         std::make_shared<FrontServiceInfo>(nodeIDStr, _frontService, _type, nullptr);
+    frontServiceInfo->setProtocolInfo(_protocolInfo);
     UpgradeGuard ul(l);
     m_nodeList[_groupID][nodeIDStr] = frontServiceInfo;
     ROUTER_LOG(INFO) << LOG_DESC("insertNode") << LOG_KV("groupID", _groupID)
+                     << LOG_KV("minVersion", _protocolInfo->minVersion())
+                     << LOG_KV("maxVersion", _protocolInfo->maxVersion())
                      << LOG_KV("nodeID", nodeIDStr) << LOG_KV("nodeType", _type);
     return true;
 }
@@ -125,25 +129,24 @@ bool LocalRouterTable::insertNode(const std::string& _groupID, NodeIDPtr _nodeID
  * @param _groupID: groupID
  * @param _nodeID: nodeID
  */
-bool LocalRouterTable::removeNode(const std::string& _groupID, NodeIDPtr _nodeID)
+bool LocalRouterTable::removeNode(const std::string& _groupID, std::string const& _nodeID)
 {
-    auto nodeIDStr = _nodeID->hex();
     UpgradableGuard l(x_nodeList);
-    if (!m_nodeList.count(_groupID) || !m_nodeList[_groupID].count(nodeIDStr))
+    if (!m_nodeList.count(_groupID) || !m_nodeList[_groupID].count(_nodeID))
     {
         ROUTER_LOG(INFO) << LOG_DESC("removeNode: the node is not registered")
-                         << LOG_KV("groupID", _groupID) << LOG_KV("nodeID", nodeIDStr);
+                         << LOG_KV("groupID", _groupID) << LOG_KV("nodeID", _nodeID);
         return false;
     }
     // erase the node from m_nodeList
     UpgradeGuard ul(l);
-    (m_nodeList[_groupID]).erase(nodeIDStr);
+    (m_nodeList[_groupID]).erase(_nodeID);
     if (m_nodeList.at(_groupID).empty())
     {
         m_nodeList.erase(_groupID);
     }
     ROUTER_LOG(INFO) << LOG_DESC("removeNode") << LOG_KV("groupID", _groupID)
-                     << LOG_KV("nodeID", nodeIDStr);
+                     << LOG_KV("nodeID", _nodeID);
     return true;
 }
 
@@ -160,8 +163,13 @@ bool LocalRouterTable::updateGroupNodeInfos(bcos::group::GroupInfo::Ptr _groupIn
         // the node is registered
         if (m_nodeList.count(groupID) && m_nodeList[groupID].count(nodeID))
         {
-            auto nodeType = (m_nodeList.at(groupID).at(nodeID))->nodeType();
-            if (nodeType == nodeInfo->nodeType())
+            auto currentNodeInfo = m_nodeList.at(groupID).at(nodeID);
+            auto nodeType = currentNodeInfo->nodeType();
+            auto protocol = nodeInfo->nodeProtocol();
+            auto currentProtocol = currentNodeInfo->protocolInfo();
+            if (nodeType == nodeInfo->nodeType() &&
+                (protocol->minVersion() == currentProtocol->minVersion()) &&
+                (protocol->maxVersion() == currentProtocol->maxVersion()))
             {
                 continue;
             }
@@ -172,15 +180,20 @@ bool LocalRouterTable::updateGroupNodeInfos(bcos::group::GroupInfo::Ptr _groupIn
         {
             continue;
         }
-        auto frontService =
-            createServiceClient<bcostars::FrontServiceClient, bcostars::FrontServicePrx>(
-                serviceName, FRONT_SERVANT_NAME, m_keyFactory);
+
+        // TODO:: tars
+        auto frontPrx = bcostars::createServantProxy<bcostars::FrontServicePrx>(serviceName);
+        auto frontClient = std::make_shared<bcostars::FrontServiceClient>(frontPrx, m_keyFactory);
+
         UpgradeGuard ul(l);
         auto frontServiceInfo = std::make_shared<FrontServiceInfo>(
-            nodeInfo->nodeID(), frontService.first, nodeInfo->nodeType(), frontService.second);
+            nodeInfo->nodeID(), frontClient, nodeInfo->nodeType(), frontPrx);
+        frontServiceInfo->setProtocolInfo(nodeInfo->nodeProtocol());
         m_nodeList[groupID][nodeID] = frontServiceInfo;
         ROUTER_LOG(INFO) << LOG_DESC("updateGroupNodeInfos: insert frontService for the node")
                          << LOG_KV("nodeID", nodeInfo->nodeID())
+                         << LOG_KV("minVersion", nodeInfo->nodeProtocol()->minVersion())
+                         << LOG_KV("maxVersion", nodeInfo->nodeProtocol()->maxVersion())
                          << LOG_KV("serviceName", serviceName) << printNodeInfo(nodeInfo);
         frontServiceUpdated = true;
     }
@@ -220,8 +233,8 @@ bool LocalRouterTable::eraseUnreachableNodes()
     return updated;
 }
 
-bool LocalRouterTable::asyncBroadcastMsg(
-    uint16_t _nodeType, const std::string& _groupID, NodeIDPtr _srcNodeID, bytesConstRef _payload)
+bool LocalRouterTable::asyncBroadcastMsg(uint16_t _nodeType, const std::string& _groupID,
+    uint16_t _moduleID, NodeIDPtr _srcNodeID, bytesConstRef _payload)
 {
     auto frontServiceList = getGroupFrontServiceList(_groupID);
     if (frontServiceList.size() == 0)
@@ -243,14 +256,16 @@ bool LocalRouterTable::asyncBroadcastMsg(
         auto dstNodeID = it->nodeID();
         ROUTER_LOG(TRACE) << LOG_BADGE(
                                  "LocalRouterTable: dispatcher broadcast-type message to node")
-                          << LOG_KV("type", _nodeType) << LOG_KV("payloadSize", _payload.size())
+                          << LOG_KV("type", _nodeType) << LOG_KV("groupID", _groupID)
+                          << LOG_KV("moduleID", _moduleID) << LOG_KV("payloadSize", _payload.size())
                           << LOG_KV("dst", dstNodeID);
-        frontService->onReceiveMessage(
-            _groupID, _srcNodeID, _payload, [_srcNodeID, dstNodeID](Error::Ptr _error) {
+        frontService->onReceiveMessage(_groupID, _srcNodeID, _payload,
+            [_groupID, _moduleID, _srcNodeID, dstNodeID](Error::Ptr _error) {
                 if (_error)
                 {
                     GATEWAY_LOG(ERROR)
-                        << LOG_DESC("ROUTER_LOG error") << LOG_KV("src", _srcNodeID->hex())
+                        << LOG_DESC("ROUTER_LOG error") << LOG_KV("groupID", _groupID)
+                        << LOG_KV("moduleID", _moduleID) << LOG_KV("src", _srcNodeID->hex())
                         << LOG_KV("dst", dstNodeID) << LOG_KV("code", _error->errorCode())
                         << LOG_KV("msg", _error->errorMessage());
                 }

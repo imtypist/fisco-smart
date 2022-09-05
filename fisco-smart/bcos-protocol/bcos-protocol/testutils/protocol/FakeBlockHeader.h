@@ -20,7 +20,7 @@
 #pragma once
 #include "bcos-protocol/Common.h"
 #include "bcos-protocol/protobuf/PBBlockHeaderFactory.h"
-#include <bcos-framework/interfaces/protocol/Exceptions.h>
+#include <bcos-framework/protocol/Exceptions.h>
 #include <bcos-utilities/Common.h>
 #include <tbb/parallel_invoke.h>
 #include <boost/test/unit_test.hpp>
@@ -45,7 +45,7 @@ inline void checkBlockHeader(BlockHeader::Ptr blockHeader, BlockHeader::Ptr deco
 
     auto decodedSealerList = decodedBlockHeader->sealerList();
     BOOST_CHECK(decodedSealerList.size() == blockHeader->sealerList().size());
-    for (auto i = 0; i < decodedSealerList.size(); i++)
+    for (decltype(decodedSealerList)::size_type i = 0; i < decodedSealerList.size(); i++)
     {
         BOOST_CHECK(decodedSealerList[i] == blockHeader->sealerList()[i]);
     }
@@ -87,10 +87,9 @@ inline BlockHeader::Ptr fakeAndTestBlockHeader(CryptoSuite::Ptr _cryptoSuite, in
     const ParentInfoList& _parentInfo, h256 const& _txsRoot, h256 const& _receiptsRoot,
     h256 const& _stateRoot, int64_t _number, u256 const& _gasUsed, int64_t _timestamp,
     int64_t _sealer, const std::vector<bytes>& _sealerList, bytes const& _extraData,
-    SignatureList _signatureList)
+    SignatureList _signatureList, bool _check = true)
 {
-    BlockHeaderFactory::Ptr blockHeaderFactory =
-        std::make_shared<PBBlockHeaderFactory>(_cryptoSuite);
+    BlockHeaderFactory::Ptr blockHeaderFactory = std::make_shared<PBBlockHeaderFactory>(_cryptoSuite);
     BlockHeader::Ptr blockHeader = blockHeaderFactory->createBlockHeader();
     blockHeader->setVersion(_version);
     blockHeader->setParentInfo(_parentInfo);
@@ -107,38 +106,41 @@ inline BlockHeader::Ptr fakeAndTestBlockHeader(CryptoSuite::Ptr _cryptoSuite, in
     WeightList weights;
     weights.push_back(0);
     blockHeader->setConsensusWeights(weights);
-    tbb::parallel_invoke([blockHeader]() { blockHeader->hash(); },
-        [blockHeader]() { blockHeader->hash(); }, [blockHeader]() { blockHeader->hash(); },
-        [blockHeader]() { blockHeader->hash(); });
-    // encode
-    std::shared_ptr<bytes> encodedData = std::make_shared<bytes>();
-    blockHeader->encode(*encodedData);
+    if (_check)
+    {
+        tbb::parallel_invoke([blockHeader]() { blockHeader->hash(); },
+            [blockHeader]() { blockHeader->hash(); }, [blockHeader]() { blockHeader->hash(); },
+            [blockHeader]() { blockHeader->hash(); });
+        // encode
+        std::shared_ptr<bytes> encodedData = std::make_shared<bytes>();
+        blockHeader->encode(*encodedData);
 
-    bcos::bytes buffer;
-    blockHeader->encode(buffer);
-    BOOST_CHECK(*encodedData == buffer);
+        bcos::bytes buffer;
+        blockHeader->encode(buffer);
+        BOOST_CHECK(*encodedData == buffer);
 
-    // decode
-    auto decodedBlockHeader = blockHeaderFactory->createBlockHeader(*encodedData);
+        // decode
+        auto decodedBlockHeader = blockHeaderFactory->createBlockHeader(*encodedData);
 #if 0
     std::cout << "### PBBlockHeaderTest: encodedData:" << *toHexString(*encodedData) << std::endl;
 #endif
-    // check the data of decodedBlockHeader
-    checkBlockHeader(blockHeader, decodedBlockHeader);
-    // test encode exception
-    (*encodedData)[0] += 1;
-    BOOST_CHECK_THROW(
-        std::make_shared<PBBlockHeader>(_cryptoSuite, *encodedData), PBObjectDecodeException);
+        // check the data of decodedBlockHeader
+        checkBlockHeader(blockHeader, decodedBlockHeader);
+        // test encode exception
+        (*encodedData)[0] += 1;
+        BOOST_CHECK_THROW(
+            std::make_shared<PBBlockHeader>(_cryptoSuite, *encodedData), PBObjectDecodeException);
 
-    // update the hash data field
-    blockHeader->setNumber(_number + 1);
-    BOOST_CHECK(blockHeader->hash() != decodedBlockHeader->hash());
-    BOOST_CHECK(blockHeader->number() == decodedBlockHeader->number() + 1);
-    // recover the hash field
-    blockHeader->setNumber(_number);
-    BOOST_CHECK(blockHeader->hash() == decodedBlockHeader->hash());
-    BOOST_CHECK(decodedBlockHeader->consensusWeights().size() == 1);
-    BOOST_CHECK(decodedBlockHeader->consensusWeights()[0] == 0);
+        // update the hash data field
+        blockHeader->setNumber(_number + 1);
+        BOOST_CHECK(blockHeader->hash() != decodedBlockHeader->hash());
+        BOOST_CHECK(blockHeader->number() == decodedBlockHeader->number() + 1);
+        // recover the hash field
+        blockHeader->setNumber(_number);
+        BOOST_CHECK(blockHeader->hash() == decodedBlockHeader->hash());
+        BOOST_CHECK(decodedBlockHeader->consensusWeights().size() == 1);
+        BOOST_CHECK(decodedBlockHeader->consensusWeights()[0] == 0);
+    }
     return blockHeader;
 }
 
@@ -168,8 +170,8 @@ inline std::vector<bytes> fakeSealerList(
     return sealerList;
 }
 
-inline SignatureList fakeSignatureList(SignatureCrypto::Ptr _signImpl,
-    std::vector<KeyPairInterface::Ptr>& _keyPairVec, h256 const& _hash)
+inline SignatureList fakeSignatureList(
+    SignatureCrypto::Ptr _signImpl, std::vector<KeyPairInterface::Ptr>& _keyPairVec, h256 const& _hash)
 {
     auto sealerIndex = 0;
     SignatureList signatureList;
@@ -203,9 +205,8 @@ inline BlockHeader::Ptr testPBBlockHeader(CryptoSuite::Ptr _cryptoSuite)
     bytes extraData = stateRoot.asBytes();
     auto signatureList = fakeSignatureList(signImpl, keyPairVec, receiptsRoot);
 
-    auto blockHeader =
-        fakeAndTestBlockHeader(cryptoSuite, version, parentInfo, txsRoot, receiptsRoot, stateRoot,
-            number, gasUsed, timestamp, sealer, sealerList, extraData, signatureList);
+    auto blockHeader = fakeAndTestBlockHeader(cryptoSuite, version, parentInfo, txsRoot, receiptsRoot, stateRoot,
+        number, gasUsed, timestamp, sealer, sealerList, extraData, signatureList);
 
     // test verifySignatureList
     signatureList = fakeSignatureList(signImpl, keyPairVec, blockHeader->hash());

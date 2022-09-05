@@ -25,6 +25,7 @@
 #include "protocol/PB/PBFTMessageFactoryImpl.h"
 #include "storage/LedgerStorage.h"
 #include "utilities/Common.h"
+#include <memory>
 
 using namespace bcos;
 using namespace bcos::consensus;

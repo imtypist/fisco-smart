@@ -21,7 +21,7 @@
 #pragma once
 
 #include <bcos-crypto/signature/key/KeyFactoryImpl.h>
-#include <bcos-framework/interfaces/protocol/Protocol.h>
+#include <bcos-framework/protocol/Protocol.h>
 #include <bcos-front/FrontServiceFactory.h>
 #include <bcos-gateway/GatewayFactory.h>
 #include <bcos-utilities/Common.h>
@@ -39,7 +39,7 @@ inline std::shared_ptr<bcos::front::FrontService> buildFrontService(
     auto threadPool = std::make_shared<bcos::ThreadPool>("frontServiceTest", 16);
 
     // build gateway
-    auto gateway = gatewayFactory->buildGateway(_configPath, true);
+    auto gateway = gatewayFactory->buildGateway(_configPath, true, nullptr, "localGateway");
 
     // create nodeID by nodeID str
     auto nodeIDPtr =
@@ -51,7 +51,7 @@ inline std::shared_ptr<bcos::front::FrontService> buildFrontService(
     auto frontService = frontServiceFactory->buildFrontService(_groupID, nodeIDPtr);
     // register front service to gateway
     gateway->gatewayNodeManager()->registerNode(
-        _groupID, nodeIDPtr, bcos::protocol::NodeType::CONSENSUS_NODE, frontService);
+        _groupID, nodeIDPtr, bcos::protocol::NodeType::CONSENSUS_NODE, frontService, nullptr);
     // front service
     frontService->start();
     // start gateway

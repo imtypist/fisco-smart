@@ -1,1 +1,0 @@
-[{"conflictFields":[{"kind":5}],"inputs":[{"internalType":"string","name":"cmd","type":"string"}],"name":"predict","outputs":[{"internalType":"string","name":"","type":"string"}],"selector":[3706991669,2449244248],"stateMutability":"view","type":"function"}]

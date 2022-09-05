@@ -18,10 +18,10 @@
  * @date 2021-09-03
  */
 
+#include <bcos-framework/Common.h>
 #include <bcos-rpc/event/Common.h>
 #include <bcos-rpc/event/EventSubRequest.h>
 #include <bcos-rpc/event/EventSubTask.h>
-#include <bcos-utilities/Log.h>
 #include <json/json.h>
 #include <exception>
 
@@ -231,7 +231,7 @@ bool EventSubRequest::fromJson(const std::string& _request)
                     {
                         address = address.substr(2);
                     }
-                    std::transform(address.begin(), address.end(), address.begin(), ::tolower);
+                    // std::transform(address.begin(), address.end(), address.begin(), ::tolower);
                     params->addAddress(address);
                 }
             }

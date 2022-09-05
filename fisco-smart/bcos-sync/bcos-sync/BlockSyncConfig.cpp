@@ -59,10 +59,11 @@ void BlockSyncConfig::resetConfig(LedgerConfig::Ptr _ledgerConfig)
     if (type != m_nodeType)
     {
         m_nodeType = type;
-        if (m_nodeTypeChanged)
-        {
-            m_nodeTypeChanged(type);
-        }
+    }
+    if (m_nodeTypeChanged && m_masterNode && (m_notifiedNodeType != m_nodeType))
+    {
+        m_nodeTypeChanged(type);
+        m_notifiedNodeType = m_nodeType;
     }
     BLKSYNC_LOG(INFO) << LOG_DESC("#### BlockSyncConfig resetConfig")
                       << LOG_KV("number", m_blockNumber)
@@ -140,7 +141,9 @@ void BlockSyncConfig::setExecutedBlock(BlockNumber _executedBlock)
     if (m_blockNumber <= _executedBlock)
     {
         m_executedBlock = _executedBlock;
+        return;
     }
+    m_executedBlock.store(m_blockNumber);
 }
 
 bcos::protocol::NodeType BlockSyncConfig::determineNodeType()

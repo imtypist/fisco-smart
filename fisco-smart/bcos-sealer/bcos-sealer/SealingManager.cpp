@@ -99,9 +99,9 @@ void SealingManager::clearPendingTxs()
         }
         catch (std::exception const& e)
         {
-            SEAL_LOG(WARNING)
-                << LOG_DESC("shouldGenerateProposal: return back the unhandled txs exception")
-                << LOG_KV("error", boost::diagnostic_information(e));
+            SEAL_LOG(WARNING) << LOG_DESC(
+                                     "clearPendingTxs: return back the unhandled txs exception")
+                              << LOG_KV("error", boost::diagnostic_information(e));
         }
     });
     UpgradeGuard ul(l);
@@ -111,7 +111,7 @@ void SealingManager::clearPendingTxs()
 
 void SealingManager::notifyResetTxsFlag(HashListPtr _txsHashList, bool _flag, size_t _retryTime)
 {
-    m_config->txpool()->asyncMarkTxs(_txsHashList, _flag, 0, HashType(),
+    m_config->txpool()->asyncMarkTxs(_txsHashList, _flag, -1, HashType(),
         [this, _txsHashList, _flag, _retryTime](Error::Ptr _error) {
             if (_error == nullptr)
             {
@@ -267,6 +267,15 @@ void SealingManager::fetchTransactions()
                     sealingMgr->appendTransactions(sealingMgr->m_pendingTxs, _txsHashList);
                     sealingMgr->appendTransactions(sealingMgr->m_pendingSysTxs, _sysTxsList);
                     abort = false;
+                }
+                else
+                {
+                    SEAL_LOG(INFO) << LOG_DESC("fetchTransactions finish: abort the expired txs")
+                                   << LOG_KV("txsSize", _txsHashList->transactionsMetaDataSize())
+                                   << LOG_KV("sysTxsSize", _sysTxsList->transactionsMetaDataSize());
+                    // Note: should reset the aborted txs
+                    sealingMgr->notifyResetProposal(_txsHashList);
+                    sealingMgr->notifyResetProposal(_sysTxsList);
                 }
                 sealingMgr->m_fetchingTxs = false;
                 sealingMgr->m_onReady();

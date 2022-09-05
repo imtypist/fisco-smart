@@ -1,12 +1,18 @@
 #!/bin/bash
 
 # deps for fisco-bcos
-sudo apt install -y curl openssl wget cmake g++ git build-essential autoconf texinfo flex bison libzstd-dev libpython3-dev python-dev \
-    openjdk-11-jdk-headless zlib1g-dev libclang-dev
+# 注意：cmake可以用snap安装较高版本，apt默认包不满足最低版本要求
+#      gcc/g++-9编译可能会报错，可以安装gcc/g++-10，配合update-alternatives使用
+#      重编译删除build, deps/src/*stamp, deps/src/*build文件夹后再编译：mkdir -p build && cd build; cmake ..; make -j4
+sudo apt install -y cmake g++ git curl build-essential autoconf texinfo flex bison libzstd-dev libpython3-dev python-dev wget libgmp-dev
 
 curl https://sh.rustup.rs -sSf | bash -s -- -y
 
 source $HOME/.cargo/env
+
+# deps for fisco console
+
+sudo apt install -y curl openssl wget
 
 # deps for intel sgx sdk/psw
 sudo apt-get install -y libcurl4-openssl-dev libprotobuf-c-dev \
