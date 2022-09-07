@@ -34,3 +34,4 @@
 .vscode/
 *.tar.gz
 nodes/
+._tassl-1.1.1b-linux-x86_64

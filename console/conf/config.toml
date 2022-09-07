@@ -17,7 +17,7 @@ useSMCrypto = "false"                       # RPC SM crypto type
 # enSslKey = "conf/sm_ensdk.key"                # SM ssl cert file path
 
 [network]
-messageTimeout = "10000"
+messageTimeout = "120000" # 设置2min timeout, 等待sgx执行结果
 defaultGroup="group0"                            # Console default group to connect
 peers=["127.0.0.1:20200", "127.0.0.1:20201"]    # The peer list to connect
 

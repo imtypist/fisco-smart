@@ -3,7 +3,7 @@
 # deps for fisco-bcos
 # 注意：cmake可以用snap安装较高版本，apt默认包不满足最低版本要求
 #      gcc/g++-9编译可能会报错，可以安装gcc/g++-10，配合update-alternatives使用
-#      重编译删除build, deps/src/*stamp, deps/src/*build文件夹后再编译：mkdir -p build && cd build; cmake ..; make -j4
+#      重编译删除build, deps/src/*stamp, deps/src/*build文件夹后再编译：mkdir -p build && cd build; cmake ..; make BuildInfo.h; make fisco-bcos -j4
 sudo apt install -y cmake g++ git curl build-essential autoconf texinfo flex bison libzstd-dev libpython3-dev python-dev wget libgmp-dev
 
 curl https://sh.rustup.rs -sSf | bash -s -- -y
@@ -59,3 +59,6 @@ sudo ninja -C build/ install
 # sudo apt-get update
 
 # sudo apt-get install gramine      # for 5.11+ upstream, in-kernel driver
+
+# install torchvision
+sudo pip3 install torchvision

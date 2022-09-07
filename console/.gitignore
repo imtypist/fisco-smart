@@ -1,1 +1,6 @@
 log/
+deploylog.txt
+account/
+conf/*.crt
+conf/*.cnf
+conf/*.key

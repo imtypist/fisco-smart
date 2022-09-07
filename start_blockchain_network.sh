@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# stop all nodes
+bash nodes/127.0.0.1/stop_all.sh
+
 # rm old nodes dir
 rm -rf nodes/
 
@@ -13,4 +16,4 @@ bash nodes/127.0.0.1/start_all.sh
 cp -r nodes/127.0.0.1/sdk/* console/conf
 
 # start console
-cd console && bash start.sh
+bash console/start.sh

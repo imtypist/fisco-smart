@@ -10,3 +10,5 @@ cat > ~/.gitconfig << EOF
         sslVerify = false
 EOF
 ```
+
+console v3.0.0调用预编译合约有问题，参见[https://github.com/FISCO-BCOS/console/issues/601](https://github.com/FISCO-BCOS/console/issues/601).

@@ -54,15 +54,15 @@ std::shared_ptr<PrecompiledExecResult> InferencePrecompiled::call(
     
     if (func == name2Selector[INFERENCE_METHOD_PREDICT])
     {   // predict() function call
-        // default retMsg
-        std::string retValue = "Call Inference!";
+        std::string retValue = "retCode: ";
 
-        // std::string execString = "cd /home/junqin/gramine/examples/pytorch;gramine-direct pytorch pytorchexample.py";
         std::string resPath = "/home/junqin/examples/pytorch/result.txt";
         std::string cmd;
         codec.decode(data, cmd);
+        
         int retCode = system(cmd.c_str());
-        if (retCode != -1 and retCode != 127)
+
+        if ((retCode != -1) && WIFEXITED(retCode) && (WEXITSTATUS(retCode) == 0))
         {
             std::ifstream ifs;
             ifs.open(resPath);
@@ -70,8 +70,11 @@ std::shared_ptr<PrecompiledExecResult> InferencePrecompiled::call(
             {
                 getline(ifs, retValue);    
             }
-            PRECOMPILED_LOG(ERROR) << LOG_BADGE("InferencePrecompiled") << LOG_DESC("predict")
+            PRECOMPILED_LOG(TRACE) << LOG_BADGE("InferencePrecompiled") << LOG_DESC("predict")
                                    << LOG_KV("result", retValue);
+        }else
+        {
+            retValue = retValue + std::to_string(retCode);
         }
         _callParameters->setExecResult(codec.encode(retValue));
     }

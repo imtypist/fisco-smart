@@ -1,0 +1,1 @@
+[{"inputs":[{"internalType":"string","name":"cmd","type":"string"}],"name":"predict","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}]
