@@ -27,7 +27,7 @@ import org.fisco.bcos.sdk.v3.model.ConstantConfig;
 import org.fisco.bcos.sdk.v3.model.TransactionReceipt;
 import org.fisco.bcos.sdk.v3.transaction.model.exception.ContractException;
 import org.fisco.bcos.sdk.v3.utils.ThreadPoolService;
-import org.fisco.smart.SmartClient;
+// import org.fisco.smart.SmartKittyClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

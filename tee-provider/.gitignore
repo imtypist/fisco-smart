@@ -1,11 +1,6 @@
-/*.tar.gz
-/OUTPUT
-/client
-/mbedtls
-/server
 *.token
 *.sig
 *.manifest.sgx
 *.manifest
-*.so
-*.so.*
+*.pt
+result.txt

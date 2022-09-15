@@ -25,7 +25,7 @@ import java.util.Random;
 
 import static java.lang.Integer.parseInt;
 
-public class SmartClient {
+public class SmartKittyClient {
 
     public static String kittyCoreAddr = "0x0662b023D9F87A06ceCb053702e9c77510f1056f";
     public static String saleClockAuctionAddr = "0xA28AC30A792A59C3CD114A87a75193C6B8278D7E";
@@ -35,7 +35,7 @@ public class SmartClient {
     public static void main(String[] args) {
         try {
             String configFileName = ConstantConfig.CONFIG_FILE_NAME;
-            URL configUrl = SmartClient.class.getClassLoader().getResource(configFileName);
+            URL configUrl = SmartKittyClient.class.getClassLoader().getResource(configFileName);
 
             if (configUrl == null) {
                 System.out.println("The configFile " + configFileName + " doesn't exist!");

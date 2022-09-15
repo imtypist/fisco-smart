@@ -1,183 +1,45 @@
-# RA-TLS Minimal Example
+# PyTorch
 
-This directory contains the Makefile, the template server manifest, and the
-minimal server and client written against the mbedTLS library.
+This directory contains steps and artifacts to run a PyTorch sample workload on
+Gramine. Specifically, this example uses a pre-trained model for image
+classification.
 
-The server and client are based on `ssl_server.c` and `ssl_client1.c` example
-programs shipped with mbedTLS. We modified them to allow using RA-TLS flows if
-the programs are given the command-line argument `epid`/`dcap`.  In particular,
-the server uses a self-signed RA-TLS cert with the SGX quote embedded in it via
-`ra_tls_create_key_and_crt()`. The client uses an RA-TLS verification callback
-to verify the server RA-TLS certificate via `ra_tls_verify_callback()`.
+The workload reads an image from a file on disk `input.jpg` and runs the
+classifier to detect what object is present in the image. For the image shipping
+with the workload, the output should be
 
-This example uses the RA-TLS libraries `ra_tls_attest.so` for server and
-`ra_tls_verify_epid.so`/ `ra_tls_verify_dcap.so` for client. These libraries are
-installed together with Gramine (for DCAP version, you need `meson setup ...
--Ddcap=enabled`). Additionally, mbedTLS libraries are required to correctly run
-RA-TLS, the client, and the server. For ECDSA/DCAP attestation, the DCAP
-software infrastructure must be installed and work correctly on the host.
-
-The current example works with both EPID (IAS) and ECDSA (DCAP) remote
-attestation schemes. For more documentation, refer to
-https://gramine.readthedocs.io/en/latest/attestation.html.
-
-## RA-TLS server
-
-The server is supposed to run in the SGX enclave with Gramine and RA-TLS
-dlopen-loaded. If RA-TLS library `ra_tls_attest.so` is not requested by user via
-`epid`/`dcap` command-line argument, the server falls back to using normal X.509
-PKI flows (specified as `native` command-line argument).
-
-If server is run with more command-line arguments (the only important thing is
-to have at least one additional argument), then the server will maliciously
-modify the SGX quote before sending to the client. This is useful for testing
-purposes.
-
-## RA-TLS client
-
-The client is supposed to run on a trusted machine (*not* in an SGX enclave). If
-RA-TLS library `ra_tls_verify_epid.so` or `ra_tls_verify_dcap.so` is not
-requested by user via `epid` or `dcap` command-line arguments respectively, the
-client falls back to using normal X.509 PKI flows (specified as `native`
-command-line argument).
-
-It is also possible to run the client in an SGX enclave. This will create a
-secure channel between two Gramine SGX processes, possibly running on different
-machines. It can be used as an example of in-enclave remote attestation and
-verification.
-
-If client is run without additional command-line arguments, it uses default
-RA-TLS verification callback that compares `MRENCLAVE`, `MRSIGNER`,
-`ISV_PROD_ID` and `ISV_SVN` against the corresonding `RA_TLS_*` environment
-variables. To run the client with its own verification callback, execute it with
-four additional command-line arguments (see the source code for details).
-
-Also, because this example builds and uses debug SGX enclaves
-(`SIGSTRUCT.ATTRIBUTES.DEBUG` bit is set to one), we use environment variable
-`RA_TLS_ALLOW_DEBUG_ENCLAVE_INSECURE=1`. Note that in production environments,
-you must *not* use this option!
-
-
-# Quick Start
-
-- Normal non-RA-TLS flows; without SGX and without Gramine:
-
-```sh
-make app
-./server native &
-./client native
-# client will successfully connect to the server via normal x.509 PKI flows
-kill %%
+```
+[('Labrador retriever', 41.58518600463867), ('golden retriever', 16.59165382385254), ('Saluki, gazelle hound', 16.286855697631836), ('whippet', 2.853914976119995), ('Ibizan hound, Ibizan Podenco', 2.3924756050109863)]
 ```
 
-- RA-TLS flows with SGX and with Gramine, EPID-based (IAS) attestation:
+With high probability (41%) the classifier detected the image to contain a
+Labrador retriever.
 
-```sh
-# replace dummy values with your SPID, linkable setting, API key, MRENCLAVE, etc!
-make clean
-RA_CLIENT_SPID=12345678901234567890123456789012 RA_CLIENT_LINKABLE=0 make app epid
+# Pre-requisites
 
-gramine-sgx ./server epid &
+The following steps should suffice to run the workload on a stock Ubuntu 18.04
+installation.
 
-RA_TLS_ALLOW_DEBUG_ENCLAVE_INSECURE=1 \
-RA_TLS_ALLOW_OUTDATED_TCB_INSECURE=1 \
-RA_TLS_EPID_API_KEY=12345678901234567890123456789012 \
-RA_TLS_MRENCLAVE=1234567890123456789012345678901234567890123456789012345678901234 \
-RA_TLS_MRSIGNER=1234567890123456789012345678901234567890123456789012345678901234 \
-RA_TLS_ISV_PROD_ID=0 RA_TLS_ISV_SVN=0 \
-./client epid
+- `sudo apt install libnss-mdns libnss-myhostname` to install additional
+  DNS-resolver libraries.
+- `sudo apt install python3-pip lsb-release` to install `pip` and `lsb_release`.
+  The former is required to install additional Python packages while the latter
+is used by the Makefile.
+- `pip3 install --user torchvision pillow` to install the torchvision and pillow
+  Python packages and their dependencies (usually in $HOME/.local). WARNING:
+This downloads several hundred megabytes of data!
+- `python3 download-pretrained-model.py` to download and save the pre-trained
+  model.  WARNING: this downloads about 200MB of data!
 
-# client will successfully connect to the server via RA-TLS/EPID flows
-kill %%
-```
+# Build
 
-- RA-TLS flows with SGX and with Gramine, ECDSA-based (DCAP) attestation:
+Run `make` to build the non-SGX version and `make SGX=1` to build the SGX
+version.
 
-```sh
-# replace dummy values with your MRENCLAVE, MRSIGNER, etc!
-make clean
-make app dcap
+# Run
 
-gramine-sgx ./server dcap &
+Execute any one of the following commands to run the workload:
 
-RA_TLS_ALLOW_DEBUG_ENCLAVE_INSECURE=1 \
-RA_TLS_ALLOW_OUTDATED_TCB_INSECURE=1 \
-RA_TLS_MRENCLAVE=1234567890123456789012345678901234567890123456789012345678901234 \
-RA_TLS_MRSIGNER=1234567890123456789012345678901234567890123456789012345678901234 \
-RA_TLS_ISV_PROD_ID=0 RA_TLS_ISV_SVN=0 \
-./client dcap
-
-# client will successfully connect to the server via RA-TLS/DCAP flows
-kill %%
-```
-
-- RA-TLS flows with SGX and with Gramine, client with its own verification callback:
-
-```sh
-# replace dummy values with your MRENCLAVE, MRSIGNER, etc!
-make clean
-make app dcap
-
-gramine-sgx ./server dcap &
-
-# arguments are: MRENCLAVE in hex, MRSIGNER in hex, ISV_PROD_ID as dec, ISV_SVN as dec
-RA_TLS_ALLOW_DEBUG_ENCLAVE_INSECURE=1 RA_TLS_ALLOW_OUTDATED_TCB_INSECURE=1 ./client dcap \
-    1234567890123456789012345678901234567890123456789012345678901234 \
-    1234567890123456789012345678901234567890123456789012345678901234 \
-    0 0
-
-# client will successfully connect to the server via RA-TLS/DCAP flows
-kill %%
-```
-
-- RA-TLS flows with SGX and with Gramine, server sends malicious SGX quote:
-
-```sh
-make clean
-make app dcap
-
-gramine-sgx ./server dcap dummy-option &
-./client dcap
-
-# client will fail to verify the malicious SGX quote and will *not* connect to the server
-kill %%
-```
-
-- RA-TLS flows with SGX and with Gramine, running EPID client in SGX:
-
-Note: you may also add environment variables to `client.manifest.template`, such
-as `RA_TLS_ALLOW_DEBUG_ENCLAVE_INSECURE`, `RA_TLS_ALLOW_OUTDATED_TCB_INSECURE`,
-`RA_TLS_MRENCLAVE`, `RA_TLS_MRSIGNER`, `RA_TLS_ISV_PROD_ID` and
-`RA_TLS_ISV_SVN`.
-
-```sh
-make clean
-RA_CLIENT_SPID=12345678901234567890123456789012 RA_CLIENT_LINKABLE=0 make app client_epid.manifest.sgx
-
-gramine-sgx ./server epid &
-
-RA_TLS_EPID_API_KEY=12345678901234567890123456789012 gramine-sgx ./client_epid epid
-
-# client will successfully connect to the server via RA-TLS/EPID flows
-kill %%
-```
-
-- RA-TLS flows with SGX and with Gramine, running DCAP client in SGX:
-
-```sh
-make clean
-make app dcap
-
-gramine-sgx ./server dcap &
-
-RA_TLS_ALLOW_DEBUG_ENCLAVE_INSECURE=1 RA_TLS_ALLOW_OUTDATED_TCB_INSECURE=1 gramine-sgx \
-    ./client_dcap dcap \
-    1234567890123456789012345678901234567890123456789012345678901234 \
-    1234567890123456789012345678901234567890123456789012345678901234 \
-    0 0
-
-# client will successfully connect to the server via RA-TLS/DCAP flows
-kill %%
-```
-
-https://github.com/intel/SGXDataCenterAttestationPrimitives/blob/master/QuoteVerification/dcap_quoteverify/sgx_dcap_quoteverify.cpp#L682:16
+- natively: `python3 pytorchexample.py`
+- Gramine w/o SGX: `gramine-direct ./pytorch ./pytorchexample.py`
+- Gramine with SGX: `gramine-sgx ./pytorch ./pytorchexample.py`
