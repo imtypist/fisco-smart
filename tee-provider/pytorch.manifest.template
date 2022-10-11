@@ -25,11 +25,11 @@ fs.mounts = [
 
   { type = "tmpfs", path = "/tmp" },
 
-  { path = "/classes.txt", uri = "file:classes.txt", type = "encrypted" },
-  { path = "/input.jpg", uri = "file:input.jpg", type = "encrypted" },
+  # { path = "/classes.txt", uri = "file:classes.txt", type = "encrypted" },
+  # { path = "/input.jpg", uri = "file:input.jpg", type = "encrypted" },
   { path = "/alexnet-pretrained.pt", uri = "file:alexnet-pretrained.pt", type = "encrypted" },
 
-  { path = "/result.txt", uri = "file:result.txt", type = "encrypted" },
+  # { path = "/result.txt", uri = "file:result.txt", type = "encrypted" },
 ]
 
 # PyTorch loads its pre-trained models from here
@@ -60,8 +60,8 @@ sgx.trusted_files = [
 
   "file:ssl/ca.crt",
 
-  # "file:classes.txt",
-  # "file:input.jpg",
+  "file:classes.txt",
+  "file:input.jpg",
   # "file:alexnet-pretrained.pt",  # Pre-trained model saved as a file
 
   # Uncomment line below if you want to use torchvision.model.alexnet(pretrained=True)
@@ -69,7 +69,7 @@ sgx.trusted_files = [
 ]
 
 sgx.allowed_files = [
-  # "file:result.txt",
+  "file:result.txt",
 ]
 
 # Gramine optionally provides patched OpenMP runtime library that runs faster

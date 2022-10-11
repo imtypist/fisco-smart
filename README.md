@@ -2,8 +2,8 @@
 
 ## Dependencies
 
-- FISCO-BCOS v3.0
-- gramine v1.2
+- FISCO-BCOS `v3.0.0`
+- gramine `v1.2`
 
 ## Tips and possible issues
 

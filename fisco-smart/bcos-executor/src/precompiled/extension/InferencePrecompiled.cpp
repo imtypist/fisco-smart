@@ -56,7 +56,7 @@ std::shared_ptr<PrecompiledExecResult> InferencePrecompiled::call(
     {   // predict() function call
         std::string retValue = "retCode: ";
 
-        std::string resPath = "/home/junqin/examples/pytorch/result.txt";
+        std::string resPath = "/home/junqin/fisco-smart/tee-provider/result.txt";
         std::string cmd;
         codec.decode(data, cmd);
         
