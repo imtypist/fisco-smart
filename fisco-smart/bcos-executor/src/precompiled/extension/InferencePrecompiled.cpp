@@ -70,12 +70,12 @@ std::shared_ptr<PrecompiledExecResult> InferencePrecompiled::call(
             {
                 getline(ifs, retValue);    
             }
-            PRECOMPILED_LOG(TRACE) << LOG_BADGE("InferencePrecompiled") << LOG_DESC("predict")
-                                   << LOG_KV("result", retValue);
         }else
         {
             retValue = retValue + std::to_string(retCode);
         }
+        PRECOMPILED_LOG(TRACE) << LOG_BADGE("InferencePrecompiled") << LOG_DESC("predict")
+                                   << LOG_KV("result", retValue);
         _callParameters->setExecResult(codec.encode(retValue));
     }
     else

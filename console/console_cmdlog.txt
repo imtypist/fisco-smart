@@ -1,1 +1,1 @@
-call InferencePrecompiled 0x0000000000000000000000000000000000006000 predict "cd /home/junqin/examples/pytorch && python3 pytorchexample.py"
+call InferencePrecompiled 0x0000000000000000000000000000000000006000 predict "cd /home/junqin/fisco-smart/tee-provider && python3 pytorchexample.py"
