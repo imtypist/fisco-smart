@@ -1,0 +1,1 @@
+[{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[{"internalType":"string","name":"cmd","type":"string"}],"name":"inference","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}]

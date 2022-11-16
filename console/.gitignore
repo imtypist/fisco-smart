@@ -4,3 +4,4 @@ account/
 conf/*.crt
 conf/*.cnf
 conf/*.key
+contracts/.compiled/group*
