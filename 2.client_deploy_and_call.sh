@@ -2,40 +2,48 @@
 
 WORK_DIR=$(pwd)
 
-function getTiming(){ 
-    start=$1
-    end=$2
+function getCurTs(){ 
+    cur=$(date +%s.%N)
   
-    start_s=$(echo $start | cut -d '.' -f 1)
-    start_ns=$(echo $start | cut -d '.' -f 2)
-    end_s=$(echo $end | cut -d '.' -f 1)
-    end_ns=$(echo $end | cut -d '.' -f 2)
+    cur_s=$(echo $cur | cut -d '.' -f 1)
+    cur_ns=$(echo $cur | cut -d '.' -f 2)
 
-
-    take=$(( ( 10#$end_s - 10#$start_s ) * 1000 + ( 10#$end_ns / 1000000 - 10#$start_ns / 1000000 ) ))
+    cur_ms=$(( 10#$cur_s * 1000 + 10#$cur_ns / 1000000 ))
     
-    echo $take
+    echo $cur_ms
+}
+
+function printLog(){
+    log_info=$1
+
+    echo -e "\033[34m [SMART][$(getCurTs)] $log_info \033[0m"
 }
 
 cd console
 
-
-echo -e "\033[34m Deploy SmartCall contract \033[0m"
-start=$(date +%s.%N)
-
+## deploy client smart contract
+printLog "deploy smart contract" 
 contract_address=$(bash console.sh deploy SmartCall | awk 'NR==2' | awk '{print $3}')
 
-end=$(date +%s.%N)
-take=$(getTiming $start $end) 
-echo -e "\033[34m [TIME] It takes ${take} ms to deploy SmartCall contract \033[0m" # 2566 2630 2585
 
+## execute model inference with non-SGX gramine
+printLog "call inference function (non-sgx-gramine, public alexnet model)"
+bash console.sh call SmartCall $contract_address inference "cd /home/junqin/fisco-smart/tee-provider/non_sgx_gramine/alexnet && gramine-direct ./pytorch pytorchexample.py"
 
+## execute model inference with Gramine in SGX
+printLog "call inference function (sgx-gramine, public alexnet model)"
+bash console.sh call SmartCall $contract_address inference "cd /home/junqin/fisco-smart/tee-provider/sgx_gramine/plaintext_model/alexnet && gramine-sgx ./pytorch pytorchexample.py"
 
-echo -e "\033[34m Call inference function \033[0m"
-start=$(date +%s.%N)
+## execute private model inference with Gramine in SGX
+printLog "client or TEE provider starts secret key provisioning server"
+cd $WORK_DIR/tee-provider/sgx_gramine/encrypted_model/alexnet/secret_prov_pf && RA_TLS_ALLOW_DEBUG_ENCLAVE_INSECURE=1 RA_TLS_ALLOW_OUTDATED_TCB_INSECURE=1 ./server_dcap wrap_key &
 
-bash console.sh call SmartCall $contract_address inference "cd /home/junqin/fisco-smart/tee-provider && python3 pytorchexample.py"
+cd $WORK_DIR/console
 
-end=$(date +%s.%N)
-take=$(getTiming $start $end) 
-echo -e "\033[34m [TIME] It takes ${take} ms to execute model inference \033[0m" # w/o TEE alexnet 3294 3161
+printLog "call inference function (sgx-gramine, private alexnet model)"
+bash console.sh call SmartCall $contract_address inference "cd /home/junqin/fisco-smart/tee-provider/sgx_gramine/encrypted_model/alexnet && gramine-sgx ./pytorch pytorchexample.py"
+
+printLog "close server_dcap"
+killall server_dcap
+
+printLog "on-chain and off-chain execution model test is completed"
