@@ -1,0 +1,49 @@
+[34m [SMART][1669063922850] deploy smart contract [0m
+[34m [SMART][1669063925555] call inference function (non-sgx-gramine, public alexnet model) [0m
+---------------------------------------------------------------------------------------------
+Return code: 0
+description: transaction executed successfully
+Return message: Success
+---------------------------------------------------------------------------------------------
+Return value size:1
+Return types: (string)
+Return values:([('Labrador retriever', 42.46735763549805), ('golden retriever', 16.608646392822266), ('Saluki, gazelle hound', 15.473832130432129), ('whippet', 2.7881932258605957), ('Ibizan hound, Ibizan Podenco', 2.3617053031921387)])
+---------------------------------------------------------------------------------------------
+
+[34m [SMART][1669063930266] call inference function (sgx-gramine, public alexnet model) [0m
+---------------------------------------------------------------------------------------------
+Return code: 0
+description: transaction executed successfully
+Return message: Success
+---------------------------------------------------------------------------------------------
+Return value size:1
+Return types: (string)
+Return values:([('Labrador retriever', 42.46735763549805), ('golden retriever',)
+---------------------------------------------------------------------------------------------
+
+[34m [SMART][1669064017768] client or TEE provider starts secret key provisioning server [0m
+[34m [SMART][1669064017771] call inference function (sgx-gramine, private alexnet model) [0m
+---------------------------------------------------------------------------------------------
+Return code: 0
+description: transaction executed successfully
+Return message: Success
+---------------------------------------------------------------------------------------------
+Return value size:1
+Return types: (string)
+Return values:([('Labrador retriever', 42.46735763549805), ('golden retriever',)
+---------------------------------------------------------------------------------------------
+
+[34m [SMART][1669064104438] close server_dcap [0m
+[34m [SMART][1669064104448] verify execution result (sgx-gramine, public alexnet model) [0m
+	Info: sgx_qv_get_quote_supplemental_data_size successfully returned.
+	Info: App: sgx_qv_verify_quote successfully returned.
+	Warning: App: Verification completed with Non-terminal result: a008
+	Info: Supplemental data version: 3
+
+[34m [SMART][1669064104600] verify execution result (sgx-gramine, private alexnet model) [0m
+	Info: sgx_qv_get_quote_supplemental_data_size successfully returned.
+	Info: App: sgx_qv_verify_quote successfully returned.
+	Warning: App: Verification completed with Non-terminal result: a008
+	Info: Supplemental data version: 3
+
+[34m [SMART][1669064104747] on-chain and off-chain execution model test is completed [0m

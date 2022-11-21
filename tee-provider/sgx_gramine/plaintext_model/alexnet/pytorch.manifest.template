@@ -56,7 +56,7 @@ sgx.trusted_files = [
 ]
 
 sgx.allowed_files = [
-  "file:result.txt",
+  "file:result.quote",
 ]
 
 # Gramine optionally provides patched OpenMP runtime library that runs faster
@@ -68,3 +68,5 @@ sgx.allowed_files = [
 # searching in the Gramine's Runtime path first, but a matter of intercepting
 # OpenMP functions.
 # loader.env.LD_PRELOAD = "/lib/libgomp.so.1"
+
+sgx.remote_attestation = "dcap"

@@ -69,7 +69,7 @@ sgx.trusted_files = [
 ]
 
 sgx.allowed_files = [
-  "file:result.txt",
+  "file:result.quote",
 ]
 
 # Gramine optionally provides patched OpenMP runtime library that runs faster

@@ -32,6 +32,15 @@ printLog "remove existing console log"
 rm -rf console/log/
 rm console/deploylog.txt
 
+## rm pck cache (need root privilege)
+printLog "remove existing local pck database"
+sudo rm /opt/intel/sgx-dcap-pccs/pckcache.db
+sudo rm /opt/intel/sgx-pck-id-retrieval-tool/pckid_retrieval.csv
+
+## restart pccs service (need root privilege)
+printLog "restart pck cache server"
+sudo systemctl restart pccs
+
 ## generate nodes
 printLog "generate 4 new blockchain nodes"
 bash build_chain.sh -l 127.0.0.1:4 -p 30300,20200

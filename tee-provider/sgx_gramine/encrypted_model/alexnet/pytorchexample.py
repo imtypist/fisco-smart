@@ -3,6 +3,8 @@
 
 from torchvision import models
 import torch
+import os
+import sys
 
 # Load the model from a file
 alexnet = torch.load("alexnet-pretrained.pt")
@@ -44,7 +46,36 @@ _, indices = torch.sort(out, descending=True)
 percentage = torch.nn.functional.softmax(out, dim=1)[0] * 100
 
 # Print the 5 most likely predictions.
-with open("result.txt", "w") as outfile:
-    outfile.write(str([(classes[idx], percentage[idx].item()) for idx in indices[0][:5]]))
+# with open("result.txt", "w") as outfile:
+#     outfile.write(str([(classes[idx], percentage[idx].item()) for idx in indices[0][:5]]))
 
-print("Done. The result was written to `result.txt`.")
+# print("Done. The result was written to `result.txt`.")
+
+# if not os.path.exists("/dev/attestation/user_report_data"):
+#     print("Cannot find `/dev/attestation/user_report_data`; "
+#           "are you running under SGX, with remote attestation enabled?")
+#     sys.exit(1)
+
+# with open('/dev/attestation/attestation_type') as f:
+#     print(f"Detected attestation type: {f.read()}")
+
+with open("/dev/attestation/user_report_data", "wb") as f:
+    f.write(str([(classes[idx], percentage[idx].item()) for idx in indices[0][:5]]).encode()[:64]) # max report data len is 64B 
+
+with open("/dev/attestation/quote", "rb") as f:
+    quote = f.read()
+
+with open("result.quote", "wb") as outfile:
+    outfile.write(quote)
+
+print("Done. The result was written to `result.quote`.")
+
+# print(f"Extracted SGX quote with size = {len(quote)} and the following fields:")
+# print(f"  ATTRIBUTES.FLAGS: {quote[96:104].hex()}  [ Debug bit: {quote[96] & 2 > 0} ]")
+# print(f"  ATTRIBUTES.XFRM:  {quote[104:112].hex()}")
+# print(f"  MRENCLAVE:        {quote[112:144].hex()}")
+# print(f"  MRSIGNER:         {quote[176:208].hex()}")
+# print(f"  ISVPRODID:        {quote[304:306].hex()}")
+# print(f"  ISVSVN:           {quote[306:308].hex()}")
+# print(f"  REPORTDATA:       {quote[368:400].hex()}")
+# print(f"                    {quote[400:432].hex()}")

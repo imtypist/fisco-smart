@@ -19,15 +19,6 @@ function printLog(){
     echo -e "\033[34m [SMART][$(getCurTs)] $log_info \033[0m"
 }
 
-## rm pck cache (need root privilege)
-printLog "remove existing local pck database"
-sudo rm /opt/intel/sgx-dcap-pccs/pckcache.db
-sudo rm /opt/intel/sgx-pck-id-retrieval-tool/pckid_retrieval.csv
-
-## restart pccs service (need root privilege)
-printLog "restart pck cache server"
-sudo systemctl restart pccs
-
 printLog "obtain TPM contract address"
 contract_address=$(cat console/deploylog.txt | grep TPM | awk '{print $5}')
 
