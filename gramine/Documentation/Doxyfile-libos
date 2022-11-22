@@ -1,0 +1,6 @@
+@INCLUDE = Doxyfile
+PROJECT_NAME = "LibOS"
+OUTPUT_DIRECTORY = _build/doxygen-libos
+INPUT = \
+    ../libos/include \
+    ../libos/src

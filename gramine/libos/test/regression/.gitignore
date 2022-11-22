@@ -1,0 +1,8 @@
+/nonexisting_testfile
+/testfile
+/trusted_testfile
+
+/tmp/*
+!/tmp/.dummy
+/tmp_enc/*
+!/tmp_enc/.dummy
