@@ -3,9 +3,11 @@
 
 from torchvision import models
 import torch
-import os
+# import os
 import sys
+import time
 
+print("[SMART][PYTHON][" + str(int(round(time.time()*1000))) + "] start to execute model inference")
 # Load the model from a file
 alexnet = torch.load("alexnet-pretrained.pt")
 
@@ -59,6 +61,8 @@ percentage = torch.nn.functional.softmax(out, dim=1)[0] * 100
 # with open('/dev/attestation/attestation_type') as f:
 #     print(f"Detected attestation type: {f.read()}")
 
+print("[SMART][PYTHON][" + str(int(round(time.time()*1000))) + "] start to attestation (generate quote)")
+
 with open("/dev/attestation/user_report_data", "wb") as f:
     f.write(str([(classes[idx], percentage[idx].item()) for idx in indices[0][:5]]).encode()[:64]) # max report data len is 64B 
 
@@ -68,7 +72,7 @@ with open("/dev/attestation/quote", "rb") as f:
 with open("result.quote", "wb") as outfile:
     outfile.write(quote)
 
-print("Done. The result was written to `result.quote`.")
+print("[SMART][PYTHON][" + str(int(round(time.time()*1000))) + "] Done. The result was written to `result.quote`.")
 
 # print(f"Extracted SGX quote with size = {len(quote)} and the following fields:")
 # print(f"  ATTRIBUTES.FLAGS: {quote[96:104].hex()}  [ Debug bit: {quote[96] & 2 > 0} ]")

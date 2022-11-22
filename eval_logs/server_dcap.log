@@ -1,0 +1,17 @@
+[SMART][SERVERDCAP][1669139219035] secret provisioning server starts connection
+Received the following measurements from the client:
+  - MRENCLAVE:   e01d23ca1e5f295b94c2ca56e89f065463c06688741eb795b9d81f522d311889
+  - MRSIGNER:    e1fb4df58b4b628c051cbf7647beecea7ee78687bb6da1452346505d830b05c7
+  - ISV_PROD_ID: 0
+  - ISV_SVN:     0
+[ WARNING: In reality, you would want to compare against expected values! ]
+[SMART][SERVERDCAP][1669139220168] secret provisioning is completed
+
+[SMART][SERVERDCAP][1669139518999] secret provisioning server starts connection
+Received the following measurements from the client:
+  - MRENCLAVE:   e01d23ca1e5f295b94c2ca56e89f065463c06688741eb795b9d81f522d311889
+  - MRSIGNER:    e1fb4df58b4b628c051cbf7647beecea7ee78687bb6da1452346505d830b05c7
+  - ISV_PROD_ID: 0
+  - ISV_SVN:     0
+[ WARNING: In reality, you would want to compare against expected values! ]
+[SMART][SERVERDCAP][1669139519950] secret provisioning is completed

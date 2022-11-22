@@ -1,0 +1,52 @@
+[34m [SMART][1669112798025] stop existing blockchain nodes [0m
+try to stop node0
+ node0 isn't running.
+try to stop node1
+ node1 isn't running.
+try to stop node2
+ node2 isn't running.
+try to stop node3
+ node3 isn't running.
+[34m [SMART][1669112798099] remove existing blockchain data [0m
+[34m [SMART][1669112798183] remove existing console log [0m
+[34m [SMART][1669112798188] remove existing local pck database [0m
+[34m [SMART][1669112798201] restart pck cache server [0m
+[34m [SMART][1669112798221] generate 4 new blockchain nodes [0m
+[32m[INFO] Use binary fisco-smart/build/fisco-bcos-air/fisco-bcos[0m
+[32m[INFO] Generate ca cert successfully![0m
+Processing IP:127.0.0.1 Total:4
+[32m[INFO] Generate ./nodes/127.0.0.1/sdk cert successful![0m
+[32m[INFO] Generate ./nodes/127.0.0.1/node0/conf cert successful![0m
+[32m[INFO] Generate ./nodes/127.0.0.1/node1/conf cert successful![0m
+[32m[INFO] Generate ./nodes/127.0.0.1/node2/conf cert successful![0m
+[32m[INFO] Generate ./nodes/127.0.0.1/node3/conf cert successful![0m
+[32m[INFO] Generate uuid success: 8709a14e-76c0-4fce-b28e-0f2da0036b88[0m
+[32m[INFO] Generate uuid success: 85f1dcf2-d806-4536-ba90-7f91c174e01c[0m
+[32m[INFO] Generate uuid success: a78965c5-2a96-4da9-bdc1-bc06b937b83d[0m
+[32m[INFO] Generate uuid success: 7c9222ff-dfa4-4b03-b2e0-af9bae498679[0m
+==============================================================
+[32m[INFO] GroupID               : group0[0m
+[32m[INFO] ChainID               : chain0[0m
+[32m[INFO] fisco-bcos path      : fisco-smart/build/fisco-bcos-air/fisco-bcos[0m
+[32m[INFO] Auth mode            : false[0m
+[32m[INFO] Start port           : 30300 20200[0m
+[32m[INFO] Server IP            : 127.0.0.1:4[0m
+[32m[INFO] SM model             : false[0m
+[32m[INFO] Output dir           : ./nodes[0m
+[32m[INFO] All completed. Files in ./nodes[0m
+[34m [SMART][1669112799227] start 4 new blockchain nodes [0m
+try to start node0
+try to start node1
+try to start node2
+try to start node3
+[32m node1 start successfully pid=478307[0m
+[32m node2 start successfully pid=478309[0m
+[32m node0 start successfully pid=478308[0m
+[32m node3 start successfully pid=478316[0m
+[34m [SMART][1669112800784] sync blockchain nodes config to console [0m
+[34m [SMART][1669112800788] deploy TEE provider management contract [0m
+transaction hash: 0x30ff08be0028e2a73b6dcb21b3340e3a45bd9aaf724449bcd57e482fbf340ba2
+contract address: 0x6849f21d1e455e9f0712b1e99fa4fcd23758e8f1
+currentAccount: 0x1d716572cc50f4349508ece334c81fa0d5f1517a
+
+[34m [SMART][1669112803839] system initialization is completed [0m

@@ -1,0 +1,86 @@
+[34m [SMART][1669112941761] deploy smart contract [0m
+[34m [SMART][1669112944512] call inference function (non-sgx-gramine, public alexnet model) [0m
+Emulating a raw system/supervisor call. This degrades performance, consider patching your application to use Gramine syscall API.
+[SMART][PYTHON][1669112949265] start to execute model inference
+[SMART][PYTHON][1669112949609] Done. The result was written to `result.txt`.
+---------------------------------------------------------------------------------------------
+Return code: 0
+description: transaction executed successfully
+Return message: Success
+---------------------------------------------------------------------------------------------
+Return value size:1
+Return types: (string)
+Return values:([('Labrador retriever', 42.46735763549805), ('golden retriever', 16.608646392822266), ('Saluki, gazelle hound', 15.473832130432129), ('whippet', 2.7881932258605957), ('Ibizan hound, Ibizan Podenco', 2.3617053031921387)])
+---------------------------------------------------------------------------------------------
+
+[34m [SMART][1669112950116] call inference function (sgx-gramine, public alexnet model) [0m
+Gramine is starting. Parsing TOML manifest file, this may take some time...
+Detected a huge manifest, preallocating 64MB of internal memory.
+-----------------------------------------------------------------------------------------------------------------------
+Gramine detected the following insecure configurations:
+
+  - loader.insecure__use_cmdline_argv = true   (forwarding command-line args from untrusted host to the app)
+  - loader.insecure__use_host_env = true       (forwarding environment vars from untrusted host to the app)
+  - sgx.allowed_files = [ ... ]                (some files are passed through from untrusted host without verification)
+
+Gramine will continue application execution, but this configuration must not be used in production!
+-----------------------------------------------------------------------------------------------------------------------
+
+Detected a huge manifest, preallocating 64MB of internal memory.
+Emulating a raw syscall instruction. This degrades performance, consider patching your application to use Gramine syscall API.
+[SMART][PYTHON][1669113022429] start to execute model inference
+[SMART][PYTHON][1669113040458] start to attestation (generate quote)
+[SMART][PYTHON][1669113040475] Done. The result was written to `result.quote`.
+---------------------------------------------------------------------------------------------
+Return code: 0
+description: transaction executed successfully
+Return message: Success
+---------------------------------------------------------------------------------------------
+Return value size:1
+Return types: (string)
+Return values:([('Labrador retriever', 42.46735763549805), ('golden retriever',)
+---------------------------------------------------------------------------------------------
+
+[34m [SMART][1669113042311] client or TEE provider starts secret key provisioning server [0m
+[34m [SMART][1669113042315] call inference function (sgx-gramine, private alexnet model) [0m
+Gramine is starting. Parsing TOML manifest file, this may take some time...
+Detected a huge manifest, preallocating 64MB of internal memory.
+-----------------------------------------------------------------------------------------------------------------------
+Gramine detected the following insecure configurations:
+
+  - loader.insecure__use_cmdline_argv = true   (forwarding command-line args from untrusted host to the app)
+  - loader.insecure__use_host_env = true       (forwarding environment vars from untrusted host to the app)
+  - sgx.allowed_files = [ ... ]                (some files are passed through from untrusted host without verification)
+
+Gramine will continue application execution, but this configuration must not be used in production!
+-----------------------------------------------------------------------------------------------------------------------
+
+Detected a huge manifest, preallocating 64MB of internal memory.
+Emulating a raw syscall instruction. This degrades performance, consider patching your application to use Gramine syscall API.
+[SMART][PYTHON][1669113116543] start to execute model inference
+[SMART][PYTHON][1669113129727] start to attestation (generate quote)
+[SMART][PYTHON][1669113129743] Done. The result was written to `result.quote`.
+---------------------------------------------------------------------------------------------
+Return code: 0
+description: transaction executed successfully
+Return message: Success
+---------------------------------------------------------------------------------------------
+Return value size:1
+Return types: (string)
+Return values:([('Labrador retriever', 42.46735763549805), ('golden retriever',)
+---------------------------------------------------------------------------------------------
+
+[34m [SMART][1669113131582] close server_dcap [0m
+[34m [SMART][1669113131596] verify execution result (sgx-gramine, public alexnet model) [0m
+	Info: sgx_qv_get_quote_supplemental_data_size successfully returned.
+	Info: App: sgx_qv_verify_quote successfully returned.
+	Warning: App: Verification completed with Non-terminal result: a008
+	Info: Supplemental data version: 3
+
+[34m [SMART][1669113131746] verify execution result (sgx-gramine, private alexnet model) [0m
+	Info: sgx_qv_get_quote_supplemental_data_size successfully returned.
+	Info: App: sgx_qv_verify_quote successfully returned.
+	Warning: App: Verification completed with Non-terminal result: a008
+	Info: Supplemental data version: 3
+
+[34m [SMART][1669113131897] on-chain and off-chain execution model test is completed [0m

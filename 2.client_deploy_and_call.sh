@@ -36,7 +36,9 @@ bash console.sh call SmartCall $contract_address inference "cd $WORK_DIR/tee-pro
 
 ## execute private model inference with Gramine in SGX
 printLog "client or TEE provider starts secret key provisioning server"
-cd $WORK_DIR/tee-provider/sgx_gramine/encrypted_model/alexnet/secret_prov_pf && RA_TLS_ALLOW_DEBUG_ENCLAVE_INSECURE=1 RA_TLS_ALLOW_OUTDATED_TCB_INSECURE=1 ./server_dcap wrap_key &
+cd $WORK_DIR/tee-provider/sgx_gramine/encrypted_model/alexnet/secret_prov_pf
+
+RA_TLS_ALLOW_DEBUG_ENCLAVE_INSECURE=1 RA_TLS_ALLOW_OUTDATED_TCB_INSECURE=1 ./server_dcap wrap_key &> eval_logs/server_dcap.log &
 
 cd $WORK_DIR/console
 

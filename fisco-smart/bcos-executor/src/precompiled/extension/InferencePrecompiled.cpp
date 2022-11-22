@@ -23,6 +23,8 @@
 #include "bcos-executor/src/precompiled/common/PrecompiledResult.h"
 #include "bcos-executor/src/precompiled/common/Utilities.h"
 #include <fstream>
+#include <sys/timeb.h>
+#include <iostream>
 
 using namespace bcos;
 using namespace bcos::executor;
@@ -41,6 +43,12 @@ std::shared_ptr<PrecompiledExecResult> InferencePrecompiled::call(
     std::shared_ptr<executor::TransactionExecutive> _executive, 
     PrecompiledExecResult::Ptr _callParameters)
 {
+    timeb t;
+    std::string cur_ts;
+    ftime(&t);
+    cur_ts = std::to_string(t.time*1000 + t.millitm);
+    std::cout << "[SMART][CPP][" << cur_ts << "] switch to off-chain execution" << std::endl;
+
     PRECOMPILED_LOG(TRACE) << LOG_BADGE("InferencePrecompiled") << LOG_DESC("call")
                            << LOG_KV("param", toHexString(_callParameters->input()));
 
@@ -60,6 +68,10 @@ std::shared_ptr<PrecompiledExecResult> InferencePrecompiled::call(
         std::string cmd;
         codec.decode(data, cmd);
         
+        ftime(&t);
+        cur_ts = std::to_string(t.time*1000 + t.millitm);
+        std::cout << "[SMART][CPP][" << cur_ts << "] outsource to TEE" << std::endl;
+
         int retCode = system(cmd.c_str());
 
         if ((retCode != -1) && WIFEXITED(retCode) && (WEXITSTATUS(retCode) == 0))
@@ -77,6 +89,10 @@ std::shared_ptr<PrecompiledExecResult> InferencePrecompiled::call(
         PRECOMPILED_LOG(TRACE) << LOG_BADGE("InferencePrecompiled") << LOG_DESC("predict")
                                    << LOG_KV("result", retValue);
         _callParameters->setExecResult(codec.encode(retValue));
+
+        ftime(&t);
+        cur_ts = std::to_string(t.time*1000 + t.millitm);
+        std::cout << "[SMART][CPP][" << cur_ts << "] receive results from TEE" << std::endl;
     }
     else
     {  // unknown function call
@@ -86,5 +102,10 @@ std::shared_ptr<PrecompiledExecResult> InferencePrecompiled::call(
     }
     gasPricer->updateMemUsed(_callParameters->m_execResult.size());
     _callParameters->setGas(_callParameters->m_gas - gasPricer->calTotalGas());
+
+    ftime(&t);
+    cur_ts = std::to_string(t.time*1000 + t.millitm);
+    std::cout << "[SMART][CPP][" << cur_ts << "] leave off-chain execution" << std::endl;
+
     return _callParameters;
 }

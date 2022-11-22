@@ -1,0 +1,41 @@
+[34m [SMART][1669119530350] obtain TPM contract address [0m
+[34m [SMART][1669119530360] retrieve enc_ppid from PCE and request pck cache update [0m
+
+Intel(R) Software Guard Extensions PCK Cert ID Retrieval Tool Version 1.14.100.3
+
+Warning: platform manifest is not available or current platform is not multi-package platform.
+the data has been sent to cache server successfully and pckid_retrieval.csv has been generated successfully!
+[34m [SMART][1669119537312] obtain enc_ppid [0m
+[34m [SMART][1669119537317] register TEE provider in the TPM contract [0m
+transaction hash: 0x53def2ed46c888ad8212d13d685a1503cec1f3f72b7c1764c343625b7dd0b310
+---------------------------------------------------------------------------------------------
+transaction status: 0
+description: transaction executed successfully
+---------------------------------------------------------------------------------------------
+Receipt message: Success
+Return message: Success
+Return value size:0
+Return types: ()
+Return values:()
+---------------------------------------------------------------------------------------------
+Event logs
+Event: {}
+
+[34m [SMART][1669119539862] query the latest registered TEE provider [0m
+---------------------------------------------------------------------------------------------
+Return code: 0
+description: transaction executed successfully
+Return message: Success
+---------------------------------------------------------------------------------------------
+Return value size:2
+Return types: (address, string)
+Return values:(0x1d716572cc50f4349508ece334c81fa0d5f1517a, cfa56ccaa179de749b0a18648f1344213cc0012e334cf4ea55a4b4b9678b8fbf81c1d1c9a130c325c0aa0d6fba84739098bb568697f6ef152d493a5aa73b58465894214733aca4109156fa2bd046d14a0154f9afad1208eb07df696a37542a5223a7b1a0b6e31dff97260d84e07ae77a0ae0ac79019c7e04fbc7a41745f117eba48220118da7ff3102804e7e6edc842d5949226761ac16ea1168726aab9ed8fc22e6c2b42f95e058a639cc899b557519596cddaaeb12de54ae544e6004de8230613edf5a7e16045b5094921c31350391524f9eebbb4d7f45e61e5bd8f84da92c6de195cb0454981ddb3bbaa8d34a862b5f8f61db28e96cdba3c9320dd5f6c57b7bc62596b0fff13128453316189810e2d7a86c53e6d3245bd59259b926c2b0d8199ee05f4a13566661a341bba8137f6a3e30823279bee0b0637957cbfa4f5bd03b570b268be4903060f97ff3098bdfa8a98dbc5e74d2a92dcb50126e22caead40e5d32b597e8d0ca1f8a8999927232b2e2b6fce27104008b4e4f9d6ab8f8fb6b)
+---------------------------------------------------------------------------------------------
+
+[34m [SMART][1669119542135] query an exsited enc_ppid in the pck cache database [0m
+
+Intel(R) Software Guard Extensions PCK Cert ID Retrieval Tool Version 1.14.100.3
+
+Warning: platform manifest is not available or current platform is not multi-package platform.
+the data has been sent to cache server successfully and pckid_retrieval.csv has been generated successfully!
+[34m [SMART][1669119542199] TEE provider registration is completed [0m

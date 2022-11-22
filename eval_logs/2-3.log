@@ -1,0 +1,98 @@
+[34m [SMART][1669119577458] deploy smart contract [0m
+[34m [SMART][1669119580256] call inference function (non-sgx-gramine, public alexnet model) [0m
+[SMART][CPP][1669119582148] switch to off-chain execution
+[SMART][CPP][1669119582148] outsource to TEE
+Emulating a raw system/supervisor call. This degrades performance, consider patching your application to use Gramine syscall API.
+[SMART][PYTHON][1669119584418] start to execute model inference
+[SMART][PYTHON][1669119584751] Done. The result was written to `result.txt`.
+[SMART][CPP][1669119584893] receive results from TEE
+[SMART][CPP][1669119584893] leave off-chain execution
+---------------------------------------------------------------------------------------------
+Return code: 0
+description: transaction executed successfully
+Return message: Success
+---------------------------------------------------------------------------------------------
+Return value size:1
+Return types: (string)
+Return values:([('Labrador retriever', 42.46735763549805), ('golden retriever', 16.608646392822266), ('Saluki, gazelle hound', 15.473832130432129), ('whippet', 2.7881932258605957), ('Ibizan hound, Ibizan Podenco', 2.3617053031921387)])
+---------------------------------------------------------------------------------------------
+
+[34m [SMART][1669119585270] call inference function (sgx-gramine, public alexnet model) [0m
+[SMART][CPP][1669119587142] switch to off-chain execution
+[SMART][CPP][1669119587142] outsource to TEE
+Gramine is starting. Parsing TOML manifest file, this may take some time...
+Detected a huge manifest, preallocating 64MB of internal memory.
+-----------------------------------------------------------------------------------------------------------------------
+Gramine detected the following insecure configurations:
+
+  - loader.insecure__use_cmdline_argv = true   (forwarding command-line args from untrusted host to the app)
+  - loader.insecure__use_host_env = true       (forwarding environment vars from untrusted host to the app)
+  - sgx.allowed_files = [ ... ]                (some files are passed through from untrusted host without verification)
+
+Gramine will continue application execution, but this configuration must not be used in production!
+-----------------------------------------------------------------------------------------------------------------------
+
+Detected a huge manifest, preallocating 64MB of internal memory.
+Emulating a raw syscall instruction. This degrades performance, consider patching your application to use Gramine syscall API.
+[SMART][PYTHON][1669119656693] start to execute model inference
+[SMART][PYTHON][1669119672336] start to attestation (generate quote)
+[SMART][PYTHON][1669119672349] Done. The result was written to `result.quote`.
+[SMART][CPP][1669119673493] receive results from TEE
+[SMART][CPP][1669119673493] leave off-chain execution
+---------------------------------------------------------------------------------------------
+Return code: 0
+description: transaction executed successfully
+Return message: Success
+---------------------------------------------------------------------------------------------
+Return value size:1
+Return types: (string)
+Return values:([('Labrador retriever', 42.46735763549805), ('golden retriever',)
+---------------------------------------------------------------------------------------------
+
+[34m [SMART][1669119674009] client or TEE provider starts secret key provisioning server [0m
+[34m [SMART][1669119674012] call inference function (sgx-gramine, private alexnet model) [0m
+[SMART][CPP][1669119676132] switch to off-chain execution
+[SMART][CPP][1669119676132] outsource to TEE
+Gramine is starting. Parsing TOML manifest file, this may take some time...
+Detected a huge manifest, preallocating 64MB of internal memory.
+-----------------------------------------------------------------------------------------------------------------------
+Gramine detected the following insecure configurations:
+
+  - loader.insecure__use_cmdline_argv = true   (forwarding command-line args from untrusted host to the app)
+  - loader.insecure__use_host_env = true       (forwarding environment vars from untrusted host to the app)
+  - sgx.allowed_files = [ ... ]                (some files are passed through from untrusted host without verification)
+
+Gramine will continue application execution, but this configuration must not be used in production!
+-----------------------------------------------------------------------------------------------------------------------
+
+Detected a huge manifest, preallocating 64MB of internal memory.
+Emulating a raw syscall instruction. This degrades performance, consider patching your application to use Gramine syscall API.
+[SMART][PYTHON][1669119745355] start to execute model inference
+[SMART][PYTHON][1669119757820] start to attestation (generate quote)
+[SMART][PYTHON][1669119757834] Done. The result was written to `result.quote`.
+[SMART][CPP][1669119759037] receive results from TEE
+[SMART][CPP][1669119759037] leave off-chain execution
+---------------------------------------------------------------------------------------------
+Return code: 0
+description: transaction executed successfully
+Return message: Success
+---------------------------------------------------------------------------------------------
+Return value size:1
+Return types: (string)
+Return values:([('Labrador retriever', 42.46735763549805), ('golden retriever',)
+---------------------------------------------------------------------------------------------
+
+[34m [SMART][1669119759386] close server_dcap [0m
+[34m [SMART][1669119759399] verify execution result (sgx-gramine, public alexnet model) [0m
+	Info: sgx_qv_get_quote_supplemental_data_size successfully returned.
+	Info: App: sgx_qv_verify_quote successfully returned.
+	Warning: App: Verification completed with Non-terminal result: a008
+	Info: Supplemental data version: 3
+
+[34m [SMART][1669119759681] verify execution result (sgx-gramine, private alexnet model) [0m
+	Info: sgx_qv_get_quote_supplemental_data_size successfully returned.
+	Info: App: sgx_qv_verify_quote successfully returned.
+	Warning: App: Verification completed with Non-terminal result: a008
+	Info: Supplemental data version: 3
+
+[34m [SMART][1669119759837] on-chain and off-chain execution model test is completed [0m

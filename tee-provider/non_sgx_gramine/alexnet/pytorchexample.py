@@ -3,6 +3,9 @@
 
 from torchvision import models
 import torch
+import time
+
+print("[SMART][PYTHON][" + str(int(round(time.time()*1000))) + "] start to execute model inference")
 
 # Load the model from a file
 alexnet = torch.load("alexnet-pretrained.pt")
@@ -47,4 +50,4 @@ percentage = torch.nn.functional.softmax(out, dim=1)[0] * 100
 with open("result.txt", "w") as outfile:
     outfile.write(str([(classes[idx], percentage[idx].item()) for idx in indices[0][:5]]))
 
-print("Done. The result was written to `result.txt`.")
+print("[SMART][PYTHON][" + str(int(round(time.time()*1000))) + "] Done. The result was written to `result.txt`.")

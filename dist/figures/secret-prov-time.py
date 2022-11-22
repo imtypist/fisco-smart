@@ -1,0 +1,21 @@
+import matplotlib.pyplot as plt
+import matplotlib
+import numpy as np
+
+matplotlib.rcParams['font.size'] = 16
+
+labels = ['secret provisioning']
+
+secret_prov_time = [1.133, 0.951]
+
+fig, ax = plt.subplots()
+
+bplot1 = ax.boxplot(secret_prov_time,
+                     vert=True,  # vertical box alignment
+                     patch_artist=True,  # fill with color
+                     labels=labels)  # will be used to label x-ticks
+
+ax.set_ylabel('time cost (seconds)')
+fig.tight_layout()
+
+plt.show()
