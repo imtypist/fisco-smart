@@ -4,10 +4,10 @@ import numpy as np
 
 matplotlib.rcParams['font.size'] = 14
 
-labels = ['registration/update', 'remote attestation']
-all_reg = [9.419, 9.705, 10.685, 9.512]
-all_attest = [1.64, 1.66, 1.69, 2.96]
-all_data = [all_reg, all_attest]
+labels = ['non-SGX', 'SGX']
+non_sgx = [0.353, 0.448, 0.333]
+sgx = [18.029, 13.184, 20.448, 12.835, 15.643, 12.465]
+all_data = [non_sgx, sgx]
 width = 0.35
 
 
@@ -34,7 +34,7 @@ bplot2 = ax2.boxplot(all_data[1],
 fig.tight_layout()
 
 # fill with colors
-colors = ['pink', 'lightblue']
+colors = ['lightyellow', 'lightgrey']
 
 for patch in bplot1['boxes']:
     patch.set_facecolor(colors[0])
