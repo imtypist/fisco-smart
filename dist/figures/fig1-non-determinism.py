@@ -16,7 +16,7 @@ rects1 = ax.bar(x - width/2, ubuntu18, width, label='Ubuntu 18.04', color='pink'
 rects2 = ax.bar(x + width/2, windows11, width, label='Windows 11', color='lightblue', edgecolor='black')
 
 # Add some text for labels, title and custom x-axis tick labels, etc.
-ax.set_ylabel('Alexnet (classification model)')
+ax.set_ylabel('alexnet prediction value (%)')
 ax.set_xticks(x, labels, rotation=15)
 ax.legend()
 
