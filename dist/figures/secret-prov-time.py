@@ -19,7 +19,7 @@ ax.set_ylabel('time cost (seconds)')
 fig.tight_layout()
 
 for patch in bplot1['boxes']:
-        patch.set_facecolor('lightgreen')
+        patch.set_facecolor('lightgray')
 
 ax.yaxis.grid(True)
 

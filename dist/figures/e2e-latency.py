@@ -22,16 +22,16 @@ width = 0.3
 
 fig, ax = plt.subplots()
 ax.barh(labels, send_contract_call, width, label='send contract call', xerr=send_contract_call_std, color='lightyellow', hatch='///')
-ax.barh(labels, off_chain_pre_check, width, left=send_contract_call, label='enclave initialization', xerr=off_chain_pre_check_std, color='pink', hatch='*')
-ax.barh(labels, model_inference, width, left=off_chain_pre_check+send_contract_call, label='model inference', xerr=model_inference_std, color='lightgreen', hatch='x')
-ax.barh(labels, generate_quote, width, left=off_chain_pre_check+send_contract_call+model_inference, label='attestation', xerr=generate_quote_std, color='lightblue', hatch='o')
-ax.barh(labels, verify_quote, width, left=off_chain_pre_check+send_contract_call+model_inference+generate_quote, label='verification', xerr=verify_quote_std, color='indigo', hatch='+')
+ax.barh(labels, off_chain_pre_check, width, left=send_contract_call, label='enclave initialization', xerr=off_chain_pre_check_std, color='lightgray', hatch='.')
+ax.barh(labels, model_inference, width, left=off_chain_pre_check+send_contract_call, label='model inference', xerr=model_inference_std, color='lightblue', hatch='x')
+ax.barh(labels, generate_quote, width, left=off_chain_pre_check+send_contract_call+model_inference, label='attestation', xerr=generate_quote_std, color='lightpink', hatch='o')
+ax.barh(labels, verify_quote, width, left=off_chain_pre_check+send_contract_call+model_inference+generate_quote, label='verification', xerr=verify_quote_std, color='lightseagreen', hatch='+')
 # x = np.arange(len(labels))  # the label locations
 
 # Add some text for labels, title and custom x-axis tick labels, etc.
 ax.set_xlabel('time cost (seconds)')
 x = np.arange(len(labels))
-ax.set_yticks(x+0.2,labels,rotation=90)
+ax.set_yticks(x,labels,rotation=90,va='center')
 
 # ax.bar_label(rects1, padding=3, rotation=45)
 # ax.bar_label(rects2, padding=3, rotation=45)
