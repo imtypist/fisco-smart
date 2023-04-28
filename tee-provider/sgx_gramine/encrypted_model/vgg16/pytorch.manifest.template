@@ -1,0 +1,91 @@
+# PyTorch manifest template
+
+loader.entrypoint = "file:{{ gramine.libos }}"
+libos.entrypoint = "{{ entrypoint }}"
+
+loader.log_level = "{{ log_level }}"
+
+loader.env.LD_LIBRARY_PATH = "/lib:/usr/lib:{{ arch_libdir }}:/usr/{{ arch_libdir }}"
+
+# Restrict the maximum number of threads to prevent insufficient memory
+# issue, observed on CentOS/RHEL.
+loader.env.OMP_NUM_THREADS = "8"
+
+loader.insecure__use_cmdline_argv = true
+loader.insecure__use_host_env = true
+
+loader.pal_internal_mem_size = "128M"
+
+fs.mounts = [
+  { uri = "file:{{ gramine.runtimedir() }}", path = "/lib" },
+  { uri = "file:{{ arch_libdir }}", path = "{{ arch_libdir }}" },
+  { uri = "file:/usr", path = "/usr" },
+  { uri = "file:/etc", path = "/etc" },
+  { uri = "file:{{ pillow_path }}", path = "{{ pillow_path }}" },
+
+  { type = "tmpfs", path = "/tmp" },
+
+  # { path = "/classes.txt", uri = "file:classes.txt", type = "encrypted" },
+  # { path = "/input.jpg", uri = "file:input.jpg", type = "encrypted" },
+  { path = "/vgg16-pretrained.pt", uri = "file:vgg16-pretrained.pt", type = "encrypted" },
+
+  # { path = "/result.txt", uri = "file:result.txt", type = "encrypted" },
+]
+
+# PyTorch loads its pre-trained models from here
+# Add below uncommented line to fs.mounts array if you want to use torchvision.model.alexnet(pretrained=True)
+# { type = "chroot", uri = "file:{{ env.HOME }}/.cache/torch", path = "{{ env.HOME }}/.cache/torch" }
+
+sgx.nonpie_binary = true
+sgx.enclave_size = "4G"
+sgx.thread_num = 32
+
+sgx.trusted_files = [
+  "file:{{ gramine.libos }}",
+  "file:{{ entrypoint }}",
+  "file:{{ gramine.runtimedir() }}/",
+  "file:{{ arch_libdir }}/",
+  "file:/usr/{{ arch_libdir }}/",
+  "file:{{ python.stdlib }}/",
+  "file:{{ python.distlib }}/",
+  "file:{{ pillow_path }}",
+  "file:{{ python.get_path('stdlib', vars={'installed_base': '/usr/local'}) }}/",
+
+  "file:pytorchexample.py",
+
+  "file:/etc/host.conf",
+  "file:/etc/hosts",
+  "file:/etc/nsswitch.conf",
+  "file:/etc/resolv.conf",
+
+  "file:ssl/ca.crt",
+
+  "file:classes.txt",
+  "file:input.jpg",
+  # "file:alexnet-pretrained.pt",  # Pre-trained model saved as a file
+
+  # Uncomment line below if you want to use torchvision.model.alexnet(pretrained=True)
+  # "file:{{ env.HOME }}/.cache/torch/checkpoints/alexnet-owt-4df8aa71.pth",
+]
+
+sgx.allowed_files = [
+  "file:result.quote",
+]
+
+# Gramine optionally provides patched OpenMP runtime library that runs faster
+# inside SGX enclaves (execute `make -C LibOS gcc` to generate it). Uncomment
+# the lines below to use the patched library. PyTorch's SGX perf overhead
+# decreases on some workloads from 25% to 8% with this patched library. Note
+# that we need to preload the library because PyTorch's distribution renames
+# libgomp.so to smth like libgomp-7c85b1e2.so.1, so it's not just a matter of
+# searching in the Gramine's Runtime path first, but a matter of intercepting
+# OpenMP functions.
+# loader.env.LD_PRELOAD = "/lib/libgomp.so.1"
+
+sgx.remote_attestation = "dcap"
+
+loader.env.LD_PRELOAD = "libsecret_prov_attest.so"
+loader.env.SECRET_PROVISION_CONSTRUCTOR = "1"
+loader.env.SECRET_PROVISION_SET_KEY = "default"
+loader.env.SECRET_PROVISION_CA_CHAIN_PATH = "ssl/ca.crt"
+loader.env.SECRET_PROVISION_SERVERS = "localhost:4433"

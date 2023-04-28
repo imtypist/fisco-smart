@@ -154,6 +154,7 @@ static void* client_connection(void* data) {
     ftime(&t);
     long cur_ts = t.time*1000 + t.millitm;
     printf("[SMART][SERVERDCAP][%ld] secret provisioning is completed\n", cur_ts);
+    fflush(stdout);
 
 out:
     mbedtls_ssl_free(&ssl);
@@ -295,6 +296,7 @@ int secret_provision_start_server(uint8_t* secret, size_t secret_size, const cha
         ftime(&t);
         long cur_ts = t.time*1000 + t.millitm;
         printf("[SMART][SERVERDCAP][%ld] secret provisioning server starts connection\n", cur_ts);
+        fflush(stdout);
 
         pthread_t tid;
         ret = pthread_create(&tid, &tattr, client_connection, ti);
@@ -304,6 +306,7 @@ int secret_provision_start_server(uint8_t* secret, size_t secret_size, const cha
         }
 
         pthread_attr_destroy(&tattr);
+
     }
 
     ret = 0;

@@ -81,8 +81,12 @@ static sgx_status_t SGX_CDECL sgx_ecall_get_target_info(void* pms)
 	//
 	sgx_lfence();
 	ms_ecall_get_target_info_t* ms = SGX_CAST(ms_ecall_get_target_info_t*, pms);
+	ms_ecall_get_target_info_t __in_ms;
+	if (memcpy_s(&__in_ms, sizeof(ms_ecall_get_target_info_t), ms, sizeof(ms_ecall_get_target_info_t))) {
+		return SGX_ERROR_UNEXPECTED;
+	}
 	sgx_status_t status = SGX_SUCCESS;
-	sgx_target_info_t* _tmp_target_info = ms->ms_target_info;
+	sgx_target_info_t* _tmp_target_info = __in_ms.ms_target_info;
 	size_t _len_target_info = sizeof(sgx_target_info_t);
 	sgx_target_info_t* _in_target_info = NULL;
 	sgx_status_t _in_retval;
@@ -103,12 +107,12 @@ static sgx_status_t SGX_CDECL sgx_ecall_get_target_info(void* pms)
 		memset((void*)_in_target_info, 0, _len_target_info);
 	}
 	_in_retval = ecall_get_target_info(_in_target_info);
-	if (MEMCPY_S(&ms->ms_retval, sizeof(ms->ms_retval), &_in_retval, sizeof(_in_retval))) {
+	if (memcpy_verw_s(&ms->ms_retval, sizeof(ms->ms_retval), &_in_retval, sizeof(_in_retval))) {
 		status = SGX_ERROR_UNEXPECTED;
 		goto err;
 	}
 	if (_in_target_info) {
-		if (MEMCPY_S(_tmp_target_info, _len_target_info, _in_target_info, _len_target_info)) {
+		if (memcpy_verw_s(_tmp_target_info, _len_target_info, _in_target_info, _len_target_info)) {
 			status = SGX_ERROR_UNEXPECTED;
 			goto err;
 		}
@@ -127,16 +131,20 @@ static sgx_status_t SGX_CDECL sgx_sgx_tvl_verify_qve_report_and_identity(void* p
 	//
 	sgx_lfence();
 	ms_sgx_tvl_verify_qve_report_and_identity_t* ms = SGX_CAST(ms_sgx_tvl_verify_qve_report_and_identity_t*, pms);
+	ms_sgx_tvl_verify_qve_report_and_identity_t __in_ms;
+	if (memcpy_s(&__in_ms, sizeof(ms_sgx_tvl_verify_qve_report_and_identity_t), ms, sizeof(ms_sgx_tvl_verify_qve_report_and_identity_t))) {
+		return SGX_ERROR_UNEXPECTED;
+	}
 	sgx_status_t status = SGX_SUCCESS;
-	const uint8_t* _tmp_p_quote = ms->ms_p_quote;
-	uint32_t _tmp_quote_size = ms->ms_quote_size;
+	const uint8_t* _tmp_p_quote = __in_ms.ms_p_quote;
+	uint32_t _tmp_quote_size = __in_ms.ms_quote_size;
 	size_t _len_p_quote = _tmp_quote_size;
 	uint8_t* _in_p_quote = NULL;
-	const sgx_ql_qe_report_info_t* _tmp_p_qve_report_info = ms->ms_p_qve_report_info;
+	const sgx_ql_qe_report_info_t* _tmp_p_qve_report_info = __in_ms.ms_p_qve_report_info;
 	size_t _len_p_qve_report_info = 1 * sizeof(sgx_ql_qe_report_info_t);
 	sgx_ql_qe_report_info_t* _in_p_qve_report_info = NULL;
-	const uint8_t* _tmp_p_supplemental_data = ms->ms_p_supplemental_data;
-	uint32_t _tmp_supplemental_data_size = ms->ms_supplemental_data_size;
+	const uint8_t* _tmp_p_supplemental_data = __in_ms.ms_p_supplemental_data;
+	uint32_t _tmp_supplemental_data_size = __in_ms.ms_supplemental_data_size;
 	size_t _len_p_supplemental_data = _tmp_supplemental_data_size;
 	uint8_t* _in_p_supplemental_data = NULL;
 	quote3_error_t _in_retval;
@@ -204,8 +212,8 @@ static sgx_status_t SGX_CDECL sgx_sgx_tvl_verify_qve_report_and_identity(void* p
 		}
 
 	}
-	_in_retval = sgx_tvl_verify_qve_report_and_identity((const uint8_t*)_in_p_quote, _tmp_quote_size, (const sgx_ql_qe_report_info_t*)_in_p_qve_report_info, ms->ms_expiration_check_date, ms->ms_collateral_expiration_status, ms->ms_quote_verification_result, (const uint8_t*)_in_p_supplemental_data, _tmp_supplemental_data_size, ms->ms_qve_isvsvn_threshold);
-	if (MEMCPY_S(&ms->ms_retval, sizeof(ms->ms_retval), &_in_retval, sizeof(_in_retval))) {
+	_in_retval = sgx_tvl_verify_qve_report_and_identity((const uint8_t*)_in_p_quote, _tmp_quote_size, (const sgx_ql_qe_report_info_t*)_in_p_qve_report_info, __in_ms.ms_expiration_check_date, __in_ms.ms_collateral_expiration_status, __in_ms.ms_quote_verification_result, (const uint8_t*)_in_p_supplemental_data, _tmp_supplemental_data_size, __in_ms.ms_qve_isvsvn_threshold);
+	if (memcpy_verw_s(&ms->ms_retval, sizeof(ms->ms_retval), &_in_retval, sizeof(_in_retval))) {
 		status = SGX_ERROR_UNEXPECTED;
 		goto err;
 	}
@@ -269,7 +277,7 @@ sgx_status_t SGX_CDECL sgx_oc_cpuidex(int cpuinfo[4], int leaf, int subleaf)
 	ocalloc_size -= sizeof(ms_sgx_oc_cpuidex_t);
 
 	if (cpuinfo != NULL) {
-		if (MEMCPY_S(&ms->ms_cpuinfo, sizeof(int*), &__tmp, sizeof(int*))) {
+		if (memcpy_verw_s(&ms->ms_cpuinfo, sizeof(int*), &__tmp, sizeof(int*))) {
 			sgx_ocfree();
 			return SGX_ERROR_UNEXPECTED;
 		}
@@ -278,19 +286,19 @@ sgx_status_t SGX_CDECL sgx_oc_cpuidex(int cpuinfo[4], int leaf, int subleaf)
 			sgx_ocfree();
 			return SGX_ERROR_INVALID_PARAMETER;
 		}
-		MEMSET(__tmp_cpuinfo, 0, _len_cpuinfo);
+		memset_verw(__tmp_cpuinfo, 0, _len_cpuinfo);
 		__tmp = (void *)((size_t)__tmp + _len_cpuinfo);
 		ocalloc_size -= _len_cpuinfo;
 	} else {
 		ms->ms_cpuinfo = NULL;
 	}
 
-	if (MEMCPY_S(&ms->ms_leaf, sizeof(ms->ms_leaf), &leaf, sizeof(leaf))) {
+	if (memcpy_verw_s(&ms->ms_leaf, sizeof(ms->ms_leaf), &leaf, sizeof(leaf))) {
 		sgx_ocfree();
 		return SGX_ERROR_UNEXPECTED;
 	}
 
-	if (MEMCPY_S(&ms->ms_subleaf, sizeof(ms->ms_subleaf), &subleaf, sizeof(subleaf))) {
+	if (memcpy_verw_s(&ms->ms_subleaf, sizeof(ms->ms_subleaf), &subleaf, sizeof(subleaf))) {
 		sgx_ocfree();
 		return SGX_ERROR_UNEXPECTED;
 	}
@@ -327,7 +335,7 @@ sgx_status_t SGX_CDECL sgx_thread_wait_untrusted_event_ocall(int* retval, const 
 	__tmp = (void *)((size_t)__tmp + sizeof(ms_sgx_thread_wait_untrusted_event_ocall_t));
 	ocalloc_size -= sizeof(ms_sgx_thread_wait_untrusted_event_ocall_t);
 
-	if (MEMCPY_S(&ms->ms_self, sizeof(ms->ms_self), &self, sizeof(self))) {
+	if (memcpy_verw_s(&ms->ms_self, sizeof(ms->ms_self), &self, sizeof(self))) {
 		sgx_ocfree();
 		return SGX_ERROR_UNEXPECTED;
 	}
@@ -335,7 +343,12 @@ sgx_status_t SGX_CDECL sgx_thread_wait_untrusted_event_ocall(int* retval, const 
 	status = sgx_ocall(1, ms);
 
 	if (status == SGX_SUCCESS) {
-		if (retval) *retval = ms->ms_retval;
+		if (retval) {
+			if (memcpy_s((void*)retval, sizeof(*retval), &ms->ms_retval, sizeof(ms->ms_retval))) {
+				sgx_ocfree();
+				return SGX_ERROR_UNEXPECTED;
+			}
+		}
 	}
 	sgx_ocfree();
 	return status;
@@ -359,7 +372,7 @@ sgx_status_t SGX_CDECL sgx_thread_set_untrusted_event_ocall(int* retval, const v
 	__tmp = (void *)((size_t)__tmp + sizeof(ms_sgx_thread_set_untrusted_event_ocall_t));
 	ocalloc_size -= sizeof(ms_sgx_thread_set_untrusted_event_ocall_t);
 
-	if (MEMCPY_S(&ms->ms_waiter, sizeof(ms->ms_waiter), &waiter, sizeof(waiter))) {
+	if (memcpy_verw_s(&ms->ms_waiter, sizeof(ms->ms_waiter), &waiter, sizeof(waiter))) {
 		sgx_ocfree();
 		return SGX_ERROR_UNEXPECTED;
 	}
@@ -367,7 +380,12 @@ sgx_status_t SGX_CDECL sgx_thread_set_untrusted_event_ocall(int* retval, const v
 	status = sgx_ocall(2, ms);
 
 	if (status == SGX_SUCCESS) {
-		if (retval) *retval = ms->ms_retval;
+		if (retval) {
+			if (memcpy_s((void*)retval, sizeof(*retval), &ms->ms_retval, sizeof(ms->ms_retval))) {
+				sgx_ocfree();
+				return SGX_ERROR_UNEXPECTED;
+			}
+		}
 	}
 	sgx_ocfree();
 	return status;
@@ -391,12 +409,12 @@ sgx_status_t SGX_CDECL sgx_thread_setwait_untrusted_events_ocall(int* retval, co
 	__tmp = (void *)((size_t)__tmp + sizeof(ms_sgx_thread_setwait_untrusted_events_ocall_t));
 	ocalloc_size -= sizeof(ms_sgx_thread_setwait_untrusted_events_ocall_t);
 
-	if (MEMCPY_S(&ms->ms_waiter, sizeof(ms->ms_waiter), &waiter, sizeof(waiter))) {
+	if (memcpy_verw_s(&ms->ms_waiter, sizeof(ms->ms_waiter), &waiter, sizeof(waiter))) {
 		sgx_ocfree();
 		return SGX_ERROR_UNEXPECTED;
 	}
 
-	if (MEMCPY_S(&ms->ms_self, sizeof(ms->ms_self), &self, sizeof(self))) {
+	if (memcpy_verw_s(&ms->ms_self, sizeof(ms->ms_self), &self, sizeof(self))) {
 		sgx_ocfree();
 		return SGX_ERROR_UNEXPECTED;
 	}
@@ -404,7 +422,12 @@ sgx_status_t SGX_CDECL sgx_thread_setwait_untrusted_events_ocall(int* retval, co
 	status = sgx_ocall(3, ms);
 
 	if (status == SGX_SUCCESS) {
-		if (retval) *retval = ms->ms_retval;
+		if (retval) {
+			if (memcpy_s((void*)retval, sizeof(*retval), &ms->ms_retval, sizeof(ms->ms_retval))) {
+				sgx_ocfree();
+				return SGX_ERROR_UNEXPECTED;
+			}
+		}
 	}
 	sgx_ocfree();
 	return status;
@@ -435,7 +458,7 @@ sgx_status_t SGX_CDECL sgx_thread_set_multiple_untrusted_events_ocall(int* retva
 	ocalloc_size -= sizeof(ms_sgx_thread_set_multiple_untrusted_events_ocall_t);
 
 	if (waiters != NULL) {
-		if (MEMCPY_S(&ms->ms_waiters, sizeof(const void**), &__tmp, sizeof(const void**))) {
+		if (memcpy_verw_s(&ms->ms_waiters, sizeof(const void**), &__tmp, sizeof(const void**))) {
 			sgx_ocfree();
 			return SGX_ERROR_UNEXPECTED;
 		}
@@ -443,7 +466,7 @@ sgx_status_t SGX_CDECL sgx_thread_set_multiple_untrusted_events_ocall(int* retva
 			sgx_ocfree();
 			return SGX_ERROR_INVALID_PARAMETER;
 		}
-		if (MEMCPY_S(__tmp, ocalloc_size, waiters, _len_waiters)) {
+		if (memcpy_verw_s(__tmp, ocalloc_size, waiters, _len_waiters)) {
 			sgx_ocfree();
 			return SGX_ERROR_UNEXPECTED;
 		}
@@ -453,7 +476,7 @@ sgx_status_t SGX_CDECL sgx_thread_set_multiple_untrusted_events_ocall(int* retva
 		ms->ms_waiters = NULL;
 	}
 
-	if (MEMCPY_S(&ms->ms_total, sizeof(ms->ms_total), &total, sizeof(total))) {
+	if (memcpy_verw_s(&ms->ms_total, sizeof(ms->ms_total), &total, sizeof(total))) {
 		sgx_ocfree();
 		return SGX_ERROR_UNEXPECTED;
 	}
@@ -461,7 +484,12 @@ sgx_status_t SGX_CDECL sgx_thread_set_multiple_untrusted_events_ocall(int* retva
 	status = sgx_ocall(4, ms);
 
 	if (status == SGX_SUCCESS) {
-		if (retval) *retval = ms->ms_retval;
+		if (retval) {
+			if (memcpy_s((void*)retval, sizeof(*retval), &ms->ms_retval, sizeof(ms->ms_retval))) {
+				sgx_ocfree();
+				return SGX_ERROR_UNEXPECTED;
+			}
+		}
 	}
 	sgx_ocfree();
 	return status;

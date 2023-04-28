@@ -1,0 +1,32 @@
+sparklines:
+  - title: CPU usage
+    rate-ms: 500
+    scale: 0
+    sample: ps -A -o %cpu | awk '{s+=$1} END {print s}'
+  - title: Free memory pages
+    rate-ms: 500
+    scale: 0
+    sample: free -w | grep 'Mem' | awk '{print $3}'
+
+runcharts:
+  - title: TEE provider monitor
+    rate-ms: 1000 
+    scale: 2 
+    items:
+      - label: TEE provider
+        sample: top -bn1 | grep sgx | grep -v grep | awk '{print $9}'
+  - title: blockchain node monitor 
+    rate-ms: 1000        # sampling rate, default = 1000
+    scale: 2            # number of digits after sample decimal point, default = 1
+    legend:
+      enabled: true     # enables item labels, default = true
+      details: true    # enables item statistics: cur/min/max/dlt values, default = true
+    items:
+      - label: blockchain node0
+        sample: top -bn1 -p $(ps -ef | grep node0 | grep -v grep | awk '{print $2}') | grep fisco | grep -v grep | awk '{print $9}'
+      - label: blockchain node1
+        sample: top -bn1 -p $(ps -ef | grep node1 | grep -v grep | awk '{print $2}') | grep fisco | grep -v grep | awk '{print $9}'
+      - label: blockchain node2
+        sample: top -bn1 -p $(ps -ef | grep node2 | grep -v grep | awk '{print $2}') | grep fisco | grep -v grep | awk '{print $9}'
+      - label: blockchain node3
+        sample: top -bn1 -p $(ps -ef | grep node3 | grep -v grep | awk '{print $2}') | grep fisco | grep -v grep | awk '{print $9}'

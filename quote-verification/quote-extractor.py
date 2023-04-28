@@ -15,5 +15,7 @@ with open(quote_path, "rb") as f:
 # print(f"  REPORTDATA:       {quote[368:400].hex()}")
 # print(f"                    {quote[400:432].hex()}")
 
+# print("\nDecode REPORTDATA:", quote[368:432].decode())
+
 with open("/home/junqin/fisco-smart/tee-provider/result.txt","w+") as f:
     f.write(quote[368:432].decode())

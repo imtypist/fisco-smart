@@ -1,14 +1,37 @@
 import matplotlib.pyplot as plt
 import matplotlib
 import numpy as np
+import os
+import linecache
 
 matplotlib.rcParams['font.size'] = 14
 
-labels = ['registration/update', 'remote attestation', 'secret provisioning']
-all_reg = [9.419, 9.705, 9.512]
-all_attest = [1.64, 1.66, 1.69]
-secret_prov_time = [1.133, 0.951]
+labels = ['TEE provider register/update', 'distributed attestation', 'secret key provisioning']
+# all_reg = [4.624, 4.616, 4.764, 4.766, 4.734]
+# all_attest = [0.227, 0.209, 0.210, 0.163, 0.171, 0.166, 0.168, 0.172, 0.179, 0.180]
+# secret_prov_time = [12.481, 40.978, 16.545, 30.190, 22.880]
+all_reg = []
+all_attest = []
+secret_prov_time = []
+files = ['alexnet', 'densenet161', 'resnet18', 'squeezenet1_0', 'vgg16']
+
+for file in files:
+    st = int(linecache.getline("../../eval_logs/%s.log.sorted" % file, 14).split('[')[3][:13])
+    ed = int(linecache.getline("../../eval_logs/%s.log.sorted" % file, 17).split('[')[3][:13])
+    all_reg.append((ed-st)/1000)
+    st = int(linecache.getline("../../eval_logs/%s.log.sorted" % file, 30).split('[')[3][:13]) + int(linecache.getline("../../eval_logs/%s.log.sorted" % file, 46).split('[')[3][:13])
+    ed = int(linecache.getline("../../eval_logs/%s.log.sorted" % file, 31).split('[')[3][:13]) + int(linecache.getline("../../eval_logs/%s.log.sorted" % file, 47).split('[')[3][:13])
+    all_attest.append((ed-st)/1000)
+    st = int(linecache.getline("../../eval_logs/%s.log.sorted" % file, 41).split('[')[3][:13]) + int(linecache.getline("../../eval_logs/%s.log.sorted" % file, 47).split('[')[3][:13])
+    ed = int(linecache.getline("../../eval_logs/%s.log.sorted" % file, 42).split('[')[3][:13]) + int(linecache.getline("../../eval_logs/%s.log.sorted" % file, 48).split('[')[3][:13])
+    all_attest.append((ed-st)/1000)
+    st = int(linecache.getline("../../eval_logs/%s.log.sorted" % file, 38).split('[')[3][:13])
+    ed = int(linecache.getline("../../eval_logs/%s.log.sorted" % file, 39).split('[')[3][:13])
+    secret_prov_time.append((ed-st)/1000)
+
 all_data = [all_reg, all_attest, secret_prov_time]
+print(all_data)
+
 width = 0.35
 
 
