@@ -31,7 +31,7 @@ x = np.arange(len(labels))  # the label locations
 width = 0.35  # the width of the bars
 
 fig = plt.figure()
-bax = brokenaxes(ylims=((0, .6), (2.5, 7), (14, 18), (29, 31)), hspace=.05)
+bax = brokenaxes(ylims=((0, .6), (4, 9), (13, 16), (29, 31)), hspace=.05)
 
 rects1 = bax.bar(x - width/2, _nonsgx, width, label='non-SGX', color='lightyellow', edgecolor='black', hatch='/')
 rects2 = bax.bar(x + width/2, _sgx, width, label='SGX', color='lightgrey', edgecolor='black')

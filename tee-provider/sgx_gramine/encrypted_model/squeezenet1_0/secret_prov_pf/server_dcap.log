@@ -1,10 +1,10 @@
 --- Reading the master key for encrypted files from 'wrap_key' ---
 --- Starting the Secret Provisioning server on port 4433 ---
-[SMART][SERVERDCAP][1682657916569] secret provisioning server starts connection
+[SMART][SERVERDCAP][1682699578376] secret provisioning server starts connection
 Received the following measurements from the client:
   - MRENCLAVE:   8474bd2779949db9ff197e4249a55123c2b815d64e8aec2412147cb454404072
   - MRSIGNER:    e1fb4df58b4b628c051cbf7647beecea7ee78687bb6da1452346505d830b05c7
   - ISV_PROD_ID: 0
   - ISV_SVN:     0
 [ WARNING: In reality, you would want to compare against expected values! ]
-[SMART][SERVERDCAP][1682657949790] secret provisioning is completed
+[SMART][SERVERDCAP][1682699582884] secret provisioning is completed

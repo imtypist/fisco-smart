@@ -1,48 +1,48 @@
-[34m [SMART][1682663360754] stop existing blockchain nodes [0m
-[34m [SMART][1682663360841] remove existing blockchain data [0m
-[34m [SMART][1682663360924] remove existing console log [0m
-[34m [SMART][1682663360929] remove existing local pck database [0m
-[34m [SMART][1682663360940] restart pck cache server [0m
-[34m [SMART][1682663360956] generate 4 new blockchain nodes [0m
-[34m [SMART][1682663361806] start 4 new blockchain nodes [0m
-[34m [SMART][1682663363353] sync blockchain nodes config to console [0m
-[34m [SMART][1682663363357] deploy TEE provider management contract [0m
-[34m [SMART][1682663366054] system initialization is completed [0m
-[34m [SMART][1682663366060] obtain TPM contract address [0m
-[34m [SMART][1682663366064] retrieve enc_ppid from PCE and request pck cache update [0m
-[34m [SMART][1682663366092] obtain enc_ppid [0m
-[34m [SMART][1682663366097] register TEE provider in the TPM contract [0m
-[34m [SMART][1682663368593] query the latest registered TEE provider [0m
-[34m [SMART][1682663370814] query an exsited enc_ppid in the pck cache database [0m
-[34m [SMART][1682663370863] TEE provider registration is completed [0m
-[34m [SMART][1682663370870] deploy smart contract [0m
-[34m [SMART][1682663373456] call inference function (non-sgx-gramine, public densenet161 model) [0m
-[34m [SMART][1682663377260] call inference function (sgx-gramine, public densenet161 model) [0m
-[34m [SMART][1682663458445] client or TEE provider starts secret key provisioning server [0m
-[34m [SMART][1682663458450] call inference function (sgx-gramine, private densenet161 model) [0m
-[34m [SMART][1682663565667] close server_dcap [0m
-[34m [SMART][1682663565679] verify execution result (sgx-gramine, public densenet161 model) [0m
-[34m [SMART][1682663565836] verify execution result (sgx-gramine, private densenet161 model) [0m
-[34m [SMART][1682663565996] on-chain and off-chain execution model test is completed [0m
-[SMART][CPP][1682663379133] switch to off-chain execution
-[SMART][CPP][1682663379133] outsource to TEE
-[SMART][PYTHON][1682663442194] start to execute model inference
-[SMART][PYTHON][1682663456876] start to attestation (generate quote)
-[SMART][PYTHON][1682663456887] Done. The result was written to `result.quote`.
-[SMART][CPP][1682663458100] receive results from TEE
-[SMART][CPP][1682663458100] leave off-chain execution
-[SMART][CPP][1682663460680] switch to off-chain execution
-[SMART][CPP][1682663460680] outsource to TEE
-[SMART][PYTHON][1682663552353] start to execute model inference
-[SMART][PYTHON][1682663564157] start to attestation (generate quote)
-[SMART][PYTHON][1682663564169] Done. The result was written to `result.quote`.
-[SMART][CPP][1682663565325] receive results from TEE
-[SMART][CPP][1682663565325] leave off-chain execution
-[SMART][CPP][1682663375303] switch to off-chain execution
-[SMART][CPP][1682663375303] outsource to TEE
-[SMART][PYTHON][1682663376454] start to execute model inference
-[SMART][PYTHON][1682663376772] Done. The result was written to `result.txt`.
-[SMART][CPP][1682663376912] receive results from TEE
-[SMART][CPP][1682663376912] leave off-chain execution
-[SMART][SERVERDCAP][1682663474205] secret provisioning server starts connection
-[SMART][SERVERDCAP][1682663504395] secret provisioning is completed
+[34m [SMART][1682699113151] stop existing blockchain nodes [0m
+[34m [SMART][1682699117316] remove existing blockchain data [0m
+[34m [SMART][1682699117408] remove existing console log [0m
+[34m [SMART][1682699117414] remove existing local pck database [0m
+[34m [SMART][1682699117430] restart pck cache server [0m
+[34m [SMART][1682699117624] generate 4 new blockchain nodes [0m
+[34m [SMART][1682699118880] start 4 new blockchain nodes [0m
+[34m [SMART][1682699120431] sync blockchain nodes config to console [0m
+[34m [SMART][1682699120435] deploy TEE provider management contract [0m
+[34m [SMART][1682699123218] system initialization is completed [0m
+[34m [SMART][1682699123227] obtain TPM contract address [0m
+[34m [SMART][1682699123236] retrieve enc_ppid from PCE and request pck cache update [0m
+[34m [SMART][1682699123283] obtain enc_ppid [0m
+[34m [SMART][1682699123290] register TEE provider in the TPM contract [0m
+[34m [SMART][1682699125791] query the latest registered TEE provider [0m
+[34m [SMART][1682699128025] query an exsited enc_ppid in the pck cache database [0m
+[34m [SMART][1682699128051] TEE provider registration is completed [0m
+[34m [SMART][1682699128055] deploy smart contract [0m
+[34m [SMART][1682699130652] call inference function (non-sgx-gramine, public densenet161 model) [0m
+[34m [SMART][1682699134424] call inference function (sgx-gramine, public densenet161 model) [0m
+[34m [SMART][1682699214548] client or TEE provider starts secret key provisioning server [0m
+[34m [SMART][1682699214552] call inference function (sgx-gramine, private densenet161 model) [0m
+[34m [SMART][1682699297517] close server_dcap [0m
+[34m [SMART][1682699297526] verify execution result (sgx-gramine, public densenet161 model) [0m
+[34m [SMART][1682699297691] verify execution result (sgx-gramine, private densenet161 model) [0m
+[34m [SMART][1682699297851] on-chain and off-chain execution model test is completed [0m
+[SMART][CPP][1682699132464] switch to off-chain execution
+[SMART][CPP][1682699132464] outsource to TEE
+[SMART][PYTHON][1682699133612] start to execute model inference
+[SMART][PYTHON][1682699133934] Done. The result was written to `result.txt`.
+[SMART][CPP][1682699134071] receive results from TEE
+[SMART][CPP][1682699134076] leave off-chain execution
+[SMART][CPP][1682699136362] switch to off-chain execution
+[SMART][CPP][1682699136362] outsource to TEE
+[SMART][PYTHON][1682699198552] start to execute model inference
+[SMART][PYTHON][1682699213012] start to attestation (generate quote)
+[SMART][PYTHON][1682699213021] Done. The result was written to `result.quote`.
+[SMART][CPP][1682699214207] receive results from TEE
+[SMART][CPP][1682699214207] leave off-chain execution
+[SMART][CPP][1682699216384] switch to off-chain execution
+[SMART][CPP][1682699216384] outsource to TEE
+[SMART][PYTHON][1682699283382] start to execute model inference
+[SMART][PYTHON][1682699295977] start to attestation (generate quote)
+[SMART][PYTHON][1682699295991] Done. The result was written to `result.quote`.
+[SMART][CPP][1682699297176] receive results from TEE
+[SMART][CPP][1682699297176] leave off-chain execution
+[SMART][SERVERDCAP][1682699229844] secret provisioning server starts connection
+[SMART][SERVERDCAP][1682699233507] secret provisioning is completed

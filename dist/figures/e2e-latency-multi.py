@@ -86,17 +86,17 @@ ax.bar(_pos+width/2, private_send_contract_call, width, label='on-chain contract
 ax.bar(_pos+width/2, private_off_chain_pre_check, width, bottom=private_send_contract_call, label='enclave initialization', color='lightgray', hatch='.', edgecolor='black')
 ax.bar(_pos+width/2, private_key_provision, width, bottom=private_send_contract_call+private_off_chain_pre_check, label='secret key provisioning (private model only)', color='orange', hatch='\\', edgecolor='black')
 ax.bar(_pos+width/2, private_model_inference, width, bottom=private_send_contract_call+private_off_chain_pre_check+private_key_provision, label='model inference', color='lightblue', hatch='x', edgecolor='black')
-ax.bar(_pos+width/2, private_generate_quote, width, bottom=private_send_contract_call+private_off_chain_pre_check+private_key_provision+private_model_inference, label='quote generation', color='lightpink', hatch='o')
-ax.bar(_pos+width/2, private_verify_quote, width, bottom=private_send_contract_call+private_off_chain_pre_check+private_key_provision+private_model_inference+private_generate_quote, label='quote verification', color='lightseagreen', hatch='+')
-ax.bar(_pos+width/2, private_execution_return, width, bottom=private_send_contract_call+private_off_chain_pre_check+private_key_provision+private_model_inference+private_generate_quote+private_verify_quote, label='contract context recovery (back to on-chain)', color='red', hatch='*')
+ax.bar(_pos+width/2, private_generate_quote, width, bottom=private_send_contract_call+private_off_chain_pre_check+private_key_provision+private_model_inference, label='quote generation', color='lightpink', hatch='o', edgecolor='black')
+ax.bar(_pos+width/2, private_verify_quote, width, bottom=private_send_contract_call+private_off_chain_pre_check+private_key_provision+private_model_inference+private_generate_quote, label='quote verification', color='lightseagreen', hatch='+', edgecolor='black')
+ax.bar(_pos+width/2, private_execution_return, width, bottom=private_send_contract_call+private_off_chain_pre_check+private_key_provision+private_model_inference+private_generate_quote+private_verify_quote, label='contract context recovery (back to on-chain)', color='red', hatch='*', edgecolor='black')
 
 
 ax.bar(_pos-width/2, send_contract_call, width, color='lightyellow', hatch='///', edgecolor='black')
 ax.bar(_pos-width/2, off_chain_pre_check, width, bottom=send_contract_call, color='lightgray', hatch='.', edgecolor='black')
 ax.bar(_pos-width/2, model_inference, width, bottom=off_chain_pre_check+send_contract_call, color='lightblue', hatch='x', edgecolor='black')
-ax.bar(_pos-width/2, generate_quote, width, bottom=off_chain_pre_check+send_contract_call+model_inference, color='lightpink', hatch='o')
-ax.bar(_pos-width/2, verify_quote, width, bottom=off_chain_pre_check+send_contract_call+model_inference+generate_quote, color='lightseagreen', hatch='+')
-ax.bar(_pos-width/2, execution_return, width, bottom=off_chain_pre_check+send_contract_call+model_inference+generate_quote+verify_quote, color='red', hatch='*')
+ax.bar(_pos-width/2, generate_quote, width, bottom=off_chain_pre_check+send_contract_call+model_inference, color='lightpink', hatch='o', edgecolor='black')
+ax.bar(_pos-width/2, verify_quote, width, bottom=off_chain_pre_check+send_contract_call+model_inference+generate_quote, color='lightseagreen', hatch='+', edgecolor='black')
+ax.bar(_pos-width/2, execution_return, width, bottom=off_chain_pre_check+send_contract_call+model_inference+generate_quote+verify_quote, color='red', hatch='*', edgecolor='black')
 
 # Add some text for labels, title and custom x-axis tick labels, etc.
 ax.set_ylabel('time cost (seconds)')

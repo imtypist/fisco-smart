@@ -1,48 +1,48 @@
-[34m [SMART][1682657475783] stop existing blockchain nodes [0m
-[34m [SMART][1682657476900] remove existing blockchain data [0m
-[34m [SMART][1682657476980] remove existing console log [0m
-[34m [SMART][1682657476985] remove existing local pck database [0m
-[34m [SMART][1682657476997] restart pck cache server [0m
-[34m [SMART][1682657477012] generate 4 new blockchain nodes [0m
-[34m [SMART][1682657478201] start 4 new blockchain nodes [0m
-[34m [SMART][1682657479756] sync blockchain nodes config to console [0m
-[34m [SMART][1682657479760] deploy TEE provider management contract [0m
-[34m [SMART][1682657482377] system initialization is completed [0m
-[34m [SMART][1682657482386] obtain TPM contract address [0m
-[34m [SMART][1682657482395] retrieve enc_ppid from PCE and request pck cache update [0m
-[34m [SMART][1682657482444] obtain enc_ppid [0m
-[34m [SMART][1682657482450] register TEE provider in the TPM contract [0m
-[34m [SMART][1682657484883] query the latest registered TEE provider [0m
-[34m [SMART][1682657487040] query an exsited enc_ppid in the pck cache database [0m
-[34m [SMART][1682657487066] TEE provider registration is completed [0m
-[34m [SMART][1682657487071] deploy smart contract [0m
-[34m [SMART][1682657489643] call inference function (non-sgx-gramine, public squeezenet1_0 model) [0m
-[SMART][CPP][1682657491566] switch to off-chain execution
-[SMART][CPP][1682657491566] outsource to TEE
-[SMART][PYTHON][1682657492723] start to execute model inference
-[SMART][PYTHON][1682657492764] Done. The result was written to `result.txt`.
-[SMART][CPP][1682657492878] receive results from TEE
-[SMART][CPP][1682657492878] leave off-chain execution
-[34m [SMART][1682657493233] call inference function (sgx-gramine, public squeezenet1_0 model) [0m
-[SMART][CPP][1682657495115] switch to off-chain execution
-[SMART][CPP][1682657495116] outsource to TEE
-[SMART][PYTHON][1682657557726] start to execute model inference
-[SMART][PYTHON][1682657562402] start to attestation (generate quote)
-[SMART][PYTHON][1682657562456] Done. The result was written to `result.quote`.
-[SMART][CPP][1682657563531] receive results from TEE
-[SMART][CPP][1682657563531] leave off-chain execution
-[34m [SMART][1682657563876] client or TEE provider starts secret key provisioning server [0m
-[34m [SMART][1682657563882] call inference function (sgx-gramine, private squeezenet1_0 model) [0m
-[SMART][CPP][1682657565812] switch to off-chain execution
-[SMART][CPP][1682657565812] outsource to TEE
-[SMART][SERVERDCAP][1682657579398] secret provisioning server starts connection
-[SMART][SERVERDCAP][1682657620376] secret provisioning is completed
-[SMART][PYTHON][1682657668334] start to execute model inference
-[SMART][PYTHON][1682657672516] start to attestation (generate quote)
-[SMART][PYTHON][1682657672524] Done. The result was written to `result.quote`.
-[SMART][CPP][1682657673594] receive results from TEE
-[SMART][CPP][1682657673594] leave off-chain execution
-[34m [SMART][1682657673934] close server_dcap [0m
-[34m [SMART][1682657673944] verify execution result (sgx-gramine, public squeezenet1_0 model) [0m
-[34m [SMART][1682657674100] verify execution result (sgx-gramine, private squeezenet1_0 model) [0m
-[34m [SMART][1682657674255] on-chain and off-chain execution model test is completed [0m
+[34m [SMART][1682699471083] stop existing blockchain nodes [0m
+[34m [SMART][1682699475289] remove existing blockchain data [0m
+[34m [SMART][1682699475309] remove existing console log [0m
+[34m [SMART][1682699475313] remove existing local pck database [0m
+[34m [SMART][1682699475326] restart pck cache server [0m
+[34m [SMART][1682699475352] generate 4 new blockchain nodes [0m
+[34m [SMART][1682699476468] start 4 new blockchain nodes [0m
+[34m [SMART][1682699478020] sync blockchain nodes config to console [0m
+[34m [SMART][1682699478024] deploy TEE provider management contract [0m
+[34m [SMART][1682699480757] system initialization is completed [0m
+[34m [SMART][1682699480764] obtain TPM contract address [0m
+[34m [SMART][1682699480771] retrieve enc_ppid from PCE and request pck cache update [0m
+[34m [SMART][1682699480811] obtain enc_ppid [0m
+[34m [SMART][1682699480818] register TEE provider in the TPM contract [0m
+[34m [SMART][1682699483371] query the latest registered TEE provider [0m
+[34m [SMART][1682699485591] query an exsited enc_ppid in the pck cache database [0m
+[34m [SMART][1682699485638] TEE provider registration is completed [0m
+[34m [SMART][1682699485643] deploy smart contract [0m
+[34m [SMART][1682699488266] call inference function (non-sgx-gramine, public squeezenet1_0 model) [0m
+[SMART][CPP][1682699490144] switch to off-chain execution
+[SMART][CPP][1682699490144] outsource to TEE
+[SMART][PYTHON][1682699491317] start to execute model inference
+[SMART][PYTHON][1682699491370] Done. The result was written to `result.txt`.
+[SMART][CPP][1682699491486] receive results from TEE
+[SMART][CPP][1682699491486] leave off-chain execution
+[34m [SMART][1682699491834] call inference function (sgx-gramine, public squeezenet1_0 model) [0m
+[SMART][CPP][1682699493781] switch to off-chain execution
+[SMART][CPP][1682699493781] outsource to TEE
+[SMART][PYTHON][1682699556664] start to execute model inference
+[SMART][PYTHON][1682699561349] start to attestation (generate quote)
+[SMART][PYTHON][1682699561359] Done. The result was written to `result.quote`.
+[SMART][CPP][1682699562676] receive results from TEE
+[SMART][CPP][1682699562676] leave off-chain execution
+[34m [SMART][1682699563016] client or TEE provider starts secret key provisioning server [0m
+[34m [SMART][1682699563019] call inference function (sgx-gramine, private squeezenet1_0 model) [0m
+[SMART][CPP][1682699564855] switch to off-chain execution
+[SMART][CPP][1682699564855] outsource to TEE
+[SMART][SERVERDCAP][1682699578376] secret provisioning server starts connection
+[SMART][SERVERDCAP][1682699582884] secret provisioning is completed
+[SMART][PYTHON][1682699632705] start to execute model inference
+[SMART][PYTHON][1682699637384] start to attestation (generate quote)
+[SMART][PYTHON][1682699637393] Done. The result was written to `result.quote`.
+[SMART][CPP][1682699638489] receive results from TEE
+[SMART][CPP][1682699638489] leave off-chain execution
+[34m [SMART][1682699638832] close server_dcap [0m
+[34m [SMART][1682699638839] verify execution result (sgx-gramine, public squeezenet1_0 model) [0m
+[34m [SMART][1682699638998] verify execution result (sgx-gramine, private squeezenet1_0 model) [0m
+[34m [SMART][1682699639153] on-chain and off-chain execution model test is completed [0m
