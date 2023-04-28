@@ -1,4 +1,18 @@
-# fisco-smart
+# Make Smart Contracts Smarter on Blockchain
+
+## Directories
+
+```
+- client: the implementation of client
+- console: run client as terminal
+- dist: experiment figures and a small NFT study case
+- eval_logs: raw experiment data
+- fisco-smart: the implementation of blockchain nodes and precompiled contracts
+- gramine: Graphene-SGX LibOS code
+- quote-verification: scripts for extracting the SGX quote file
+- tee-provider: the implementation of TEE provider
+- *.sh: bash scripts to install dependencies and run the prototype
+```
 
 ## Dependencies
 
@@ -18,4 +32,4 @@ cat > ~/.gitconfig << EOF
 EOF
 ```
 
-- console v3.0.0调用预编译合约有问题，参见[https://github.com/FISCO-BCOS/console/issues/601](https://github.com/FISCO-BCOS/console/issues/601).
+- console v3.0.0 has minor issues on calling precompiled contracts, the fixed method refers to [https://github.com/FISCO-BCOS/console/issues/601](https://github.com/FISCO-BCOS/console/issues/601).
