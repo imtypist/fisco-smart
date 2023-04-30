@@ -44,8 +44,20 @@ bax.set_xticks(x, labels)
 bax.legend(loc=2)
 # bax.grid(axis='y', which='major', ls='-')
 
-# ax.bar_label(rects2, padding=3, rotation=45)
-
+# bax.bar_label(rects1, padding=3, rotation=45)
+# bax.bar_label(rects2, padding=3, rotation=45)
 
 # ax.yaxis.grid(True)
+
+plt.text(0.025, 0.03, str(_nonsgx[0]), rotation=45)
+plt.text(0.2, 0.035, str(_nonsgx[1]), rotation=45)
+plt.text(0.4, 0.02, str(_nonsgx[2]), rotation=45)
+plt.text(0.6, 0.015, str(_nonsgx[3]), rotation=45)
+plt.text(0.8, 0.06, str(_nonsgx[4]), rotation=45)
+
+plt.text(0.1, 0.61, str(_sgx[0]), rotation=45)
+plt.text(0.3, 0.675, str(_sgx[1]), rotation=45)
+plt.text(0.5, 0.475, str(_sgx[2]), rotation=45)
+plt.text(0.7, 0.125, str(_sgx[3]), rotation=45)
+plt.text(0.9, 0.98, str(_sgx[4]), rotation=45)
 plt.show()
