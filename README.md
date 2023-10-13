@@ -37,13 +37,17 @@ EOF
 ## Evaluation
 
 - estimated gas cost of model inference on-chain
+
 ![](dist/figures/evm-gas-cost.png)
 
 - time cost of TEE register, distributed attestation, and secret provisioning
+
 ![](dist/figures/das-and-secretprov.png)
 
-- time cost comparison in sgx and non-sgx environments
-![](dist/figures/sgx-inference-comp.png)
+- time cost comparison in SMART and EVM-based on-chain solutions
+
+![](dist/figures/sgx-inference-comp-with-evm.png)
 
 - end-to-end latency of SMART framework
+
 ![](dist/figures/e2e-latency-multi.png)
