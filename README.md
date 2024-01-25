@@ -51,3 +51,16 @@ EOF
 - end-to-end latency of SMART framework
 
 ![](dist/figures/e2e-latency-multi.png)
+
+## Cite
+
+This work has been accepted by WWW'24. If this work is useful to you, please cite the following paper.
+```
+@inproceedings{HuangWWW2024Advancing,
+  title={Advancing Web 3.0: Making Smart Contracts Smarter on Blockchain},
+  author={Huang, Junqin and Kong, Linghe and Cheng, Guanjie and Xiang, Qiao and Chen, Guihai and Huang, Gang and Liu, Xue},
+  booktitle={Proceedings of the ACM Web Conference 2024},
+  pages={1-12},
+  year={2024}
+}
+```
